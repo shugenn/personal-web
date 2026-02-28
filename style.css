@@ -8,13 +8,13 @@
 body {
     font-family: 'Arial', sans-serif;
     line-height: 1.6;
-    color: #333;
+    color: black;
 }
 
 /* Header dan Navigasi */
 header {
-    background-color: #2c3e50;
-    color: white;
+    background-color: #ffffff;
+    color: black;
     padding: 1rem 0;
     position: fixed;
     width: 100%;
@@ -38,19 +38,19 @@ nav {
 }
 
 .nav-links a {
-    color: white;
+    color: black;
     text-decoration: none;
     transition: color 0.3s;
 }
 
 .nav-links a:hover {
-    color: #3498db;
+    color: #213885;
 }
 
 /* Hero Section */
 .hero {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
+    background: white;
+    color: black;
     min-height: 100vh;
     display: flex;
     align-items: center;
@@ -65,12 +65,13 @@ nav {
 }
 
 .highlight {
-    color: #f39c12;
+    color: #cccacc;
 }
 
 .cta-button {
-    background-color: #3498db;
-    color: white;
+    background-color: #5f3475;
+;
+    color: #ecdfd2;
     border: none;
     padding: 1rem 2rem;
     font-size: 1rem;
@@ -81,13 +82,13 @@ nav {
 }
 
 .cta-button:hover {
-    background-color: #2980b9;
+    background-color: #893172;
 }
 
 /* About Section */
 .about {
     padding: 4rem 2rem;
-    max-width: 1200px;
+    background-color: #ecdfd2;
     margin: 0 auto;
     text-align: center;
 }
@@ -95,20 +96,20 @@ nav {
 .about h2 {
     font-size: 2.5rem;
     margin-bottom: 1rem;
-    color: #2c3e50;
+    color: #081849;
 }
 
 /* Projects Section */
 .projects {
     padding: 4rem 2rem;
-    background-color: #f4f4f4;
+    background-color: #cccacc;
 }
 
 .projects h2 {
     text-align: center;
     font-size: 2.5rem;
     margin-bottom: 2rem;
-    color: #2c3e50;
+    color: #081849;
 }
 
 .project-grid {
@@ -135,7 +136,7 @@ nav {
 .contact {
     padding: 4rem 2rem;
     text-align: center;
-    background-color: #2c3e50;
+    background-color: #213885;
     color: white;
 }
 
