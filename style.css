@@ -103,6 +103,68 @@ nav {
     color: #081849;
 }
 
+.about-top {
+    max-width: 1000px;
+    margin: 0 auto 2rem;
+    display: flex;
+    gap: 2rem;
+    align-items: flex-start;
+    text-align: left;
+}
+
+.about-image-wrapper {
+    flex: 0 0 280px;
+}
+
+.about-image {
+    width: 100%;
+    border-radius: 12px;
+    display: block;
+    object-fit: cover;
+}
+
+.about-bio {
+    flex: 1;
+}
+
+.about-bio h3 {
+    color: #081849;
+    margin-bottom: 0.8rem;
+}
+
+.about-bio ul {
+    list-style: disc;
+    padding-left: 1.2rem;
+}
+
+.about-bio li {
+    margin-bottom: 0.8rem;
+}
+
+.about-bio p {
+    line-height: 1.8;
+    text-align: justify;
+}
+
+.about-summary {
+    max-width: 1000px;
+    margin: 2rem auto;
+    line-height: 1.8;
+}
+
+@media (max-width: 768px) {
+    .about-top {
+        flex-direction: column;
+        align-items: center;
+        text-align: left;
+    }
+
+    .about-image-wrapper {
+        width: 220px;
+        flex: none;
+    }
+}
+
 /* Projects Section */
 .projects {
     padding: 4rem 2rem;
