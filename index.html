@@ -116,8 +116,28 @@
 
     <!-- Bagian Contact -->
     <section id="contact" class="contact">
-        <h2>Hubungi Saya</h2>
-        <p>Email: email@example.com</p>
+        <div class="contact-container">
+            <div class="contact-box connect-box">
+                <h3>Connect with me</h3>
+                <div class="connect-grid">
+                    <a class="connect-item" href="https://www.instagram.com/andrwjong" target="_blank" rel="noopener noreferrer">Instagram</a>
+                    <a class="connect-item" href="https://www.linkedin.com/in/andrew-jong-892308337" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+                    <button class="connect-item" id="copyEmailBtn" type="button" data-email="andrew.jong10@gmail.com">andrew.jong10@gmail.com</button>
+                </div>
+                <p class="copy-status" id="copyStatus" aria-live="polite"></p>
+            </div>
+
+            <div class="contact-box comment-box">
+                <h3>Comment</h3>
+                <form id="commentForm" class="comment-form">
+                    <input type="text" id="commentName" name="name" placeholder="Your name" required>
+                    <textarea id="commentMessage" name="message" placeholder="Your message" rows="5" required></textarea>
+                    <button type="submit">Submit Comment</button>
+                </form>
+
+                <div class="comment-list" id="commentList"></div>
+            </div>
+        </div>
     </section>
 
     <!-- Link ke JavaScript -->

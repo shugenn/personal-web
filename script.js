@@ -176,5 +176,99 @@ window.addEventListener('resize', () => {
     updateCardsWaveEffect();
 });
 
+// ============================================
+// CONTACT SECTION FUNCTIONALITY
+// ============================================
+
+const copyEmailBtn = document.getElementById('copyEmailBtn');
+const copyStatus = document.getElementById('copyStatus');
+const commentForm = document.getElementById('commentForm');
+const commentList = document.getElementById('commentList');
+const commentStorageKey = 'portfolioComments';
+
+function escapeHtml(text) {
+    return text
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+}
+
+function getStoredComments() {
+    try {
+        const stored = localStorage.getItem(commentStorageKey);
+        return stored ? JSON.parse(stored) : [];
+    } catch {
+        return [];
+    }
+}
+
+function saveComments(comments) {
+    localStorage.setItem(commentStorageKey, JSON.stringify(comments));
+}
+
+function renderComments() {
+    if (!commentList) {
+        return;
+    }
+
+    const comments = getStoredComments();
+
+    if (comments.length === 0) {
+        commentList.innerHTML = '<p>No comments yet.</p>';
+        return;
+    }
+
+    commentList.innerHTML = comments
+        .map(comment => `
+            <div class="comment-item">
+                <p class="comment-name">${escapeHtml(comment.name)}</p>
+                <p class="comment-message">${escapeHtml(comment.message)}</p>
+            </div>
+        `)
+        .join('');
+}
+
+if (copyEmailBtn && copyStatus) {
+    copyEmailBtn.addEventListener('click', async () => {
+        const email = copyEmailBtn.dataset.email || '';
+
+        if (!email) {
+            copyStatus.textContent = 'Email is not available.';
+            return;
+        }
+
+        try {
+            await navigator.clipboard.writeText(email);
+            copyStatus.textContent = 'Email copied to clipboard.';
+        } catch {
+            copyStatus.textContent = `Copy failed. Please use: ${email}`;
+        }
+    });
+}
+
+if (commentForm) {
+    commentForm.addEventListener('submit', (event) => {
+        event.preventDefault();
+
+        const formData = new FormData(commentForm);
+        const name = (formData.get('name') || '').toString().trim();
+        const message = (formData.get('message') || '').toString().trim();
+
+        if (!name || !message) {
+            return;
+        }
+
+        const comments = getStoredComments();
+        comments.unshift({ name, message });
+        saveComments(comments);
+        commentForm.reset();
+        renderComments();
+    });
+}
+
+renderComments();
+
 // Log ketika halaman selesai dimuat
 console.log('Website portfolio dengan wave effect berhasil dimuat!');
