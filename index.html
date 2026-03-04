@@ -23,7 +23,7 @@
     <!-- Bagian Hero/Home -->
     <section id="home" class="hero">
         <div class="hero-content">
-            <h2>Halo, Saya <span class="highlight">Theodore Andrew Jong</span></h2>
+            <h2>Halo, Saya <span class="highlight">T. Andrew Jong</span></h2>
             <p>Dreamer | Yearner | Rizzler</p>
             <button class="cta-button">Lihat Portfolio</button>
         </div>
@@ -31,42 +31,88 @@
 
     <!-- Bagian About -->
     <section id="about" class="about">
-        <h2>About Me</h2>
-        <div class="about-top">
-            <div class="about-image-wrapper">
-                <img src="images/web-photo.jpg" alt="Foto Theodore Andrew Jong" class="about-image">
-            </div>
-            <div class="about-bio">
-                <h3>Personal Information</h3>
-                <ul>
-                    <li>Name: Theodore Andrew Jong</li>
-                    <li>Place, Date of Birth: Manado, 10 October 2006</li>
-                    <li>Height: 173 cm</li>
-                    <li>Weight: 55 kg</li>
-                    <li>Status: Student</li>
-                    <li>Hobbies: Coding, Watching Movies, and Sports</li>
-                </ul>
-                <h3>Professional Summary</h3>
+        <div class="about-container">
+            <img src="images/web-photo.jpg" alt="Foto Theodore Andrew Jong" class="about-image">
+            <div class="about-content">
+                <h2>Hello, I'm</h2>
+                <h2 class="highlight">Theodore Andrew Jong</h2>
                 <p>Mahasiswa Teknik Informatika Universitas Sam Ratulangi dan Putra Fakultas Teknik tahun 2025. Terampil dalam public speaking, bekerja dalam tim, komunikasi interpersonal, 
                     dan menyelesaikan masalah yang didukung dengan pengalaman dalam organisasi dan penyelenggara di berbagai program kegiatan kampus.</p>
+                <blockquote class="about-motto">
+                    <span class="motto-main">“memento mori”</span>
+                    <span class="motto-meaning">remember you are mortal</span>
+                </blockquote>
             </div>
         </div>
     </section>
 
-    <!-- Bagian Projects -->
-    <section id="projects" class="projects">
-        <h2>Proyek Saya</h2>
-        <div class="project-grid">
-            <div class="project-card">
-                <h3>Project 1</h3>
-                <p>Deskripsi project pertama</p>
-            </div>
-            <div class="project-card">
-                <h3>Project 2</h3>
-                <p>Deskripsi project kedua</p>
+    <!-- Bagian Portfolio -->
+    <section id="projects" class="portfolio">
+        <h2>Portfolio Gallery</h2>
+        <div class="portfolio-carousel-wrapper">
+            <div class="portfolio-carousel" id="portfolioCarousel">
+                <div class="portfolio-card" data-index="0">
+                    <div class="portfolio-image">
+                        <img src="https://via.placeholder.com/500x500/5f3475/ffffff?text=Project+1" alt="Project 1">
+                    </div>
+                    <div class="portfolio-info">
+                        <h3>Lorem Ipsum Dolor Sit</h3>
+                    </div>
+                </div>
+
+                <div class="portfolio-card" data-index="1">
+                    <div class="portfolio-image">
+                        <img src="https://via.placeholder.com/500x500/708d81/ffffff?text=Project+2" alt="Project 2">
+                    </div>
+                    <div class="portfolio-info">
+                        <h3>Consectetur Adipiscing</h3>
+                    </div>
+                </div>
+
+                <div class="portfolio-card" data-index="2">
+                    <div class="portfolio-image">
+                        <img src="https://via.placeholder.com/500x500/893172/ffffff?text=Project+3" alt="Project 3">
+                    </div>
+                    <div class="portfolio-info">
+                        <h3>Sed Do Eiusmod Tempor</h3>
+                    </div>
+                </div>
+
+                <div class="portfolio-card" data-index="3">
+                    <div class="portfolio-image">
+                        <img src="https://via.placeholder.com/500x500/213885/ffffff?text=Project+4" alt="Project 4">
+                    </div>
+                    <div class="portfolio-info">
+                        <h3>Incididunt Ut Labore</h3>
+                    </div>
+                </div>
+
+                <div class="portfolio-card" data-index="4">
+                    <div class="portfolio-image">
+                        <img src="https://via.placeholder.com/500x500/081849/ffffff?text=Project+5" alt="Project 5">
+                    </div>
+                    <div class="portfolio-info">
+                        <h3>Magna Aliqua Enim</h3>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
+
+    <!-- Modal untuk project detail -->
+    <div id="projectModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeProjectModal()">&times;</button>
+            <div class="modal-body">
+                <img id="modalImage" src="" alt="Project" class="modal-image">
+                <div class="modal-info">
+                    <h2 id="modalTitle"></h2>
+                    <p id="modalDescription"></p>
+                    <a id="modalLink" href="#" class="modal-button" target="_blank">Lihat Details</a>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Bagian Contact -->
     <section id="contact" class="contact">
