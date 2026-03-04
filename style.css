@@ -94,74 +94,89 @@ nav {
     padding: 4rem 2rem;
     background-color: #ecdfd2;
     margin: 0 auto;
-    text-align: center;
+}
+
+.about-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    display: flex;
+    gap: 2.5rem;
+    align-items: flex-start;
 }
 
 .about h2 {
     font-size: 2.5rem;
-    margin-bottom: 1rem;
+    margin-bottom: 0;
     color: #081849;
-}
-
-.about-top {
-    max-width: 1000px;
-    margin: 0 auto 2rem;
-    display: flex;
-    gap: 2rem;
-    align-items: flex-start;
     text-align: left;
 }
 
-.about-image-wrapper {
-    flex: 0 0 280px;
+.about-content h2 {
+    line-height: 1;
+}
+
+.about-content h2:last-of-type {
+    margin-bottom: 1rem;
 }
 
 .about-image {
-    width: 100%;
+    width: 280px;
+    flex-shrink: 0;
     border-radius: 12px;
     display: block;
     object-fit: cover;
 }
 
-.about-bio {
+.about-content {
     flex: 1;
 }
 
-.about-bio h3 {
-    color: #081849;
-    margin-bottom: 0.8rem;
-}
-
-.about-bio ul {
-    list-style: disc;
-    padding-left: 1.2rem;
-}
-
-.about-bio li {
-    margin-bottom: 0.8rem;
-}
-
-.about-bio p {
+.about p {
     line-height: 1.8;
     text-align: justify;
 }
 
-.about-summary {
-    max-width: 1000px;
-    margin: 2rem auto;
-    line-height: 1.8;
+.about-motto {
+    margin-top: 1.25rem;
+    padding: 1.1rem 1.25rem;
+    background-color: #ffffff;
+    border-left: 6px solid #5f3475;
+    border-radius: 10px;
+    color: #081849;
+    position: relative;
+    text-align: left;
+    box-shadow: 0 10px 18px rgba(95, 52, 117, 0.18);
+}
+
+.motto-main {
+    display: block;
+    font-size: 1.15rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 0.35rem;
+}
+
+.motto-meaning {
+    display: block;
+    font-size: 0.96rem;
+    color: #4f4f4f;
+    letter-spacing: 0.01em;
 }
 
 @media (max-width: 768px) {
-    .about-top {
+    .about-container {
         flex-direction: column;
         align-items: center;
-        text-align: left;
+        text-align: center;
     }
 
-    .about-image-wrapper {
+    .about-image {
         width: 220px;
-        flex: none;
+    }
+
+    .about h2 {
+        text-align: center;
     }
 }
 
