@@ -531,13 +531,138 @@ nav {
 
 /* Contact Section */
 .contact {
-    padding: 4rem 2rem;
-    text-align: center;
+    padding: 3rem 1.5rem;
     background-color: #213885;
     color: white;
 }
 
-.contact h2 {
-    font-size: 2.5rem;
+.contact-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: flex;
+    gap: 1.5rem;
+    align-items: stretch;
+}
+
+.contact-box {
+    background-color: #ffffff;
+    color: #081849;
+    border-radius: 16px;
+    padding: 1.1rem;
+    min-height: 340px;
+}
+
+.contact-box h3 {
+    font-size: 1.6rem;
     margin-bottom: 1rem;
+}
+
+.connect-box {
+    flex: 1;
+}
+
+.connect-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.8rem;
+}
+
+.connect-item {
+    display: block;
+    width: 100%;
+    text-align: left;
+    border: 1px solid #d7d7d7;
+    border-radius: 10px;
+    padding: 0.85rem 1rem;
+    background-color: #ecdfd2;
+    color: #081849;
+    text-decoration: none;
+    font-size: 1rem;
+    transition: background-color 0.2s ease;
+    cursor: pointer;
+}
+
+.connect-item:hover {
+    background-color: #cccacc;
+}
+
+.copy-status {
+    margin-top: 0.8rem;
+    min-height: 1.4rem;
+    color: #5f3475;
+    font-size: 0.95rem;
+}
+
+.comment-box {
+    flex: 1.4;
+}
+
+.comment-form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.comment-form input,
+.comment-form textarea {
+    width: 100%;
+    border: 1px solid #d7d7d7;
+    border-radius: 10px;
+    padding: 0.8rem 0.95rem;
+    font-size: 0.95rem;
+    font-family: inherit;
+}
+
+.comment-form button {
+    width: fit-content;
+    border: none;
+    border-radius: 10px;
+    background-color: #5f3475;
+    color: #ecdfd2;
+    padding: 0.65rem 1.2rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.comment-form button:hover {
+    background-color: #893172;
+}
+
+.comment-list {
+    margin-top: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.comment-item {
+    border: 1px solid #d7d7d7;
+    border-radius: 10px;
+    padding: 0.7rem 0.9rem;
+    background-color: #f7f4f1;
+}
+
+.comment-name {
+    font-weight: 700;
+    margin-bottom: 0.2rem;
+}
+
+.comment-message {
+    color: #333;
+    white-space: pre-wrap;
+}
+
+@media (max-width: 768px) {
+    .contact-container {
+        flex-direction: column;
+    }
+
+    .contact-box {
+        width: 100%;
+    }
+
+    .connect-box,
+    .comment-box {
+        min-height: auto;
+    }
 }
