@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portfolio Saya</title>
     <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 </head>
 <body>
     <!-- Bagian Header/Navigasi -->
@@ -23,9 +24,39 @@
     <!-- Bagian Hero/Home -->
     <section id="home" class="hero">
         <div class="hero-content">
-            <h2>Halo, Saya <span class="highlight">T. Andrew Jong</span></h2>
-            <p>Dreamer | Yearner | Rizzler</p>
-            <button class="cta-button">Lihat Portfolio</button>
+            <div class="hero-main">
+                <div class="hero-name-container">
+                    <h2 class="hero-name">Andrew</h2>
+                </div>
+                <div class="hero-image-container">
+                    <img src="images/Andrew-no-bg.png" alt="Andrew" class="hero-image">
+                </div>
+            </div>
+            
+            <!-- SVG untuk animasi garis -->
+            <svg class="animated-lines" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid meet">
+                <!-- Garis ke Dreamer (atas kiri) -->
+                <path class="animated-line line-1" d="M 300 200 Q 250 150 200 100" fill="none" stroke="#4D5BDB" stroke-width="2" stroke-linecap="round"/>
+                
+                <!-- Garis ke Yearner (atas kanan) -->
+                <path class="animated-line line-2" d="M 900 200 Q 950 150 1000 100" fill="none" stroke="#4D5BDB" stroke-width="2" stroke-linecap="round"/>
+                
+                <!-- Garis ke Rizzler (bawah) -->
+                <path class="animated-line line-3" d="M 600 500 Q 600 600 600 700" fill="none" stroke="#4D5BDB" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            
+            <!-- Kata-kata yang tersebar dengan animasi -->
+            <div class="scattered-words">
+                <div class="word-item word-dreamer" data-line="line-1">
+                    <span class="word-text">Dreamer</span>
+                </div>
+                <div class="word-item word-yearner" data-line="line-2">
+                    <span class="word-text">Yearner</span>
+                </div>
+                <div class="word-item word-rizzler" data-line="line-3">
+                    <span class="word-text">Rizzler</span>
+                </div>
+            </div>
         </div>
     </section>
 

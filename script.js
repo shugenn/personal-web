@@ -15,6 +15,82 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     });
 });
 
+// ============================================
+// HERO SECTION ANIMATIONS WITH GSAP
+// ============================================
+
+// Animasi hero name dengan efek puffy
+const heroName = document.querySelector('.hero-name');
+if (heroName) {
+    gsap.from(heroName, {
+        duration: 1.5,
+        opacity: 0,
+        scale: 0.5,
+        y: 50,
+        delay: 0.3,
+        ease: 'elastic.out(1, 0.3)'
+    });
+    
+    // Continuous puffy animation
+    gsap.to(heroName, {
+        duration: 3,
+        scaleY: 1.15,
+        scaleX: 1.05,
+        repeat: -1,
+        yoyo: true,
+        ease: 'sine.inOut'
+    });
+}
+
+// Animasi hero image
+const heroImage = document.querySelector('.hero-image');
+if (heroImage) {
+    gsap.from(heroImage, {
+        duration: 1.2,
+        opacity: 0,
+        scale: 0.7,
+        delay: 0.5,
+        ease: 'power3.out'
+    });
+}
+
+// Animasi lines dengan GSAP
+const lines = document.querySelectorAll('.animated-line');
+lines.forEach((line, index) => {
+    const length = line.getTotalLength();
+    line.style.strokeDasharray = length;
+    line.style.strokeDashoffset = length;
+    
+    gsap.to(line, {
+        strokeDashoffset: 0,
+        duration: 1.5,
+        delay: 0.8 + (index * 0.3),
+        ease: 'power2.inOut'
+    });
+});
+
+// Animasi kata-kata dengan entrance effect
+const wordItems = document.querySelectorAll('.word-item');
+wordItems.forEach((word, index) => {
+    gsap.from(word, {
+        duration: 0.8,
+        opacity: 0,
+        scale: 0.5,
+        delay: 1.8 + (index * 0.2),
+        ease: 'back.out(1.7)'
+    });
+    
+    // Floating animation
+    gsap.to(word, {
+        duration: 3 + (index * 0.5),
+        y: 15,
+        repeat: -1,
+        yoyo: true,
+        ease: 'sine.inOut',
+        delay: 2.5 + (index * 0.2)
+    });
+});
+
 // Animasi untuk tombol CTA
 const ctaButton = document.querySelector('.cta-button');
 
