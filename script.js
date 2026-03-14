@@ -7,25 +7,226 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         const targetSection = document.querySelector(targetId);
         
         if (targetSection) {
-            targetSection.scrollIntoView({
-                behavior: 'smooth',
-                block: 'start'
+            setActiveNavLink(this);
+
+            const header = document.querySelector('header');
+            const headerOffset = header ? header.offsetHeight + 10 : 80;
+            const sectionTop = targetSection.getBoundingClientRect().top + window.scrollY - headerOffset;
+
+            window.scrollTo({
+                top: sectionTop,
+                behavior: 'smooth'
             });
         }
     });
 });
 
-// Animasi untuk tombol CTA
-const ctaButton = document.querySelector('.cta-button');
+// Navbar active link + animated underline berdasarkan section
+const navLinks = document.querySelectorAll('.nav-links a[href^="#"]');
+const navIndicator = document.querySelector('.nav-indicator');
+const navList = document.querySelector('.nav-links');
+const headerElement = document.querySelector('header');
+const observedSections = Array.from(navLinks)
+    .map(link => document.querySelector(link.getAttribute('href')))
+    .filter(Boolean);
 
-if (ctaButton) {
-    ctaButton.addEventListener('click', () => {
-        const projectsSection = document.querySelector('#projects');
-        projectsSection.scrollIntoView({
-            behavior: 'smooth'
-        });
-    });
+function moveNavIndicator(activeLink) {
+    if (!navIndicator || !navList || !activeLink) return;
+
+    const listRect = navList.getBoundingClientRect();
+    const linkRect = activeLink.getBoundingClientRect();
+    const offsetX = linkRect.left - listRect.left;
+
+    navIndicator.style.width = `${linkRect.width}px`;
+    navIndicator.style.transform = `translateX(${offsetX}px)`;
 }
+
+function setActiveNavLink(activeLink) {
+    if (!activeLink) return;
+
+    navLinks.forEach(link => link.classList.remove('active'));
+    activeLink.classList.add('active');
+    moveNavIndicator(activeLink);
+}
+
+function updateHeaderMode(currentSection) {
+    if (!headerElement) return;
+
+    const isHomeSection = currentSection && currentSection.id === 'home';
+    headerElement.classList.toggle('home-mode', isHomeSection);
+}
+
+function updateActiveNavByScroll() {
+    if (!observedSections.length) return;
+
+    const header = document.querySelector('header');
+    const headerOffset = header ? header.offsetHeight + 20 : 90;
+    const scrollTarget = window.scrollY + headerOffset;
+
+    let currentSection = observedSections[0];
+
+    observedSections.forEach(section => {
+        if (scrollTarget >= section.offsetTop) {
+            currentSection = section;
+        }
+    });
+
+    const matchedLink = document.querySelector(`.nav-links a[href="#${currentSection.id}"]`);
+    if (matchedLink) {
+        setActiveNavLink(matchedLink);
+    }
+
+    updateHeaderMode(currentSection);
+}
+
+window.addEventListener('scroll', updateActiveNavByScroll, { passive: true });
+
+window.addEventListener('resize', () => {
+    updateActiveNavByScroll();
+    const activeLink = document.querySelector('.nav-links a.active');
+    moveNavIndicator(activeLink);
+});
+
+// ============================================
+// HERO SECTION ANIMATIONS WITH GSAP
+// ============================================
+
+// Tunggu sampai DOM dan GSAP siap
+document.addEventListener('DOMContentLoaded', function() {
+    const initialLink = document.querySelector('.nav-links a.active') || navLinks[0];
+    setActiveNavLink(initialLink);
+    updateActiveNavByScroll();
+
+    
+    // Animasi foto masuk
+    gsap.from('.hero-image', {
+        duration: 1,
+        opacity: 0,
+        scale: 0.8,
+        ease: 'power2.out'
+    });
+
+    // Animasi teks hero dari kiri
+    gsap.from('.hero-greeting', {
+        duration: 0.8,
+        x: -50,
+        opacity: 0,
+        ease: 'power2.out',
+        delay: 0.3
+    });
+
+    gsap.from('.hero-name', {
+        duration: 1,
+        x: -80,
+        opacity: 0,
+        ease: 'power3.out',
+        delay: 0.5
+    });
+
+    gsap.from('.hero-role', {
+        duration: 0.8,
+        x: -50,
+        opacity: 0,
+        ease: 'power2.out',
+        delay: 0.7
+    });
+
+    gsap.from('.hero-socials', {
+        duration: 0.8,
+        y: 30,
+        opacity: 0,
+        ease: 'power2.out',
+        delay: 0.9
+    });
+
+    gsap.from('.hero-buttons', {
+        duration: 0.8,
+        y: 30,
+        opacity: 0,
+        ease: 'power2.out',
+        delay: 1.1
+    });
+
+    // Background letter subtle animation
+    gsap.from('.hero-bg-letter', {
+        duration: 1.5,
+        opacity: 0,
+        scale: 0.9,
+        ease: 'power2.out',
+        delay: 0.2
+    });
+    
+    // Fungsi untuk animasi lengkap (garis + kata)
+    function animateWordWithLine(lineClass, dotClass, wordClass, delay = 0) {
+        const line = document.querySelector(lineClass);
+        const dot = document.querySelector(dotClass);
+        const word = document.querySelector(wordClass);
+        
+        if (!line || !dot || !word) return;
+        
+        const lineLength = line.getTotalLength();
+        
+        // Set initial state untuk line
+        line.style.strokeDasharray = lineLength;
+        line.style.strokeDashoffset = lineLength;
+        
+        // Timeline untuk satu animate in saja
+        const tl = gsap.timeline({
+            delay: delay
+        });
+        
+        // 1. Tampilkan garis dan jalankan animasi wipe dari gambar ke kata
+        // Menggunakan set opacity agar titik "stroke-linecap" tidak muncul di awal saat delay
+        tl.set(line, { opacity: 1 })
+        .to(line, {
+            strokeDashoffset: 0,
+            duration: 1,
+            ease: 'power2.inOut'
+        })
+        
+        // 2. Dot muncul
+        .to(dot, {
+            opacity: 1,
+            duration: 0.2
+        }, '-=0.2')
+        
+        // 3. Kata muncul dengan baseline (dari arah panah)
+        .fromTo(word, 
+            {
+                opacity: 0,
+                y: -15
+            },
+            {
+                opacity: 1,
+                y: 0,
+                duration: 0.8,
+                ease: 'back.out(1.7)'
+            },
+            '-=0.1'
+        );
+        
+        return tl;
+    }
+    
+    // Jalankan animasi untuk setiap kata dengan stagger delay
+    animateWordWithLine('.line-dreamer', '.dot-dreamer', '.word-dreamer', 1.5);
+    animateWordWithLine('.line-yearner', '.dot-yearner', '.word-yearner', 1.8);
+    animateWordWithLine('.line-rizzler', '.dot-rizzler', '.word-rizzler', 2.1);
+    
+    // About section stats animation
+    gsap.from('.about .hero-stats', {
+        scrollTrigger: {
+            trigger: '.about',
+            start: 'top 70%'
+        },
+        duration: 0.8,
+        y: 30,
+        opacity: 0,
+        ease: 'power2.out',
+        delay: 0.4
+    });
+
+});
 
 // ============================================
 // CAROUSEL FUNCTIONALITY WITH WAVE EFFECT
