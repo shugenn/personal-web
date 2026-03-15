@@ -17,7 +17,7 @@
             <h1 class="logo"><span class="highlightH">AJ</span>WEB</h1>
             <ul class="nav-links">
                 <li><a href="#home" class="active">Home</a></li>
-                <li><a href="#about">About Me</a></li>
+                <li><a href="#about">About</a></li>
                 <li><a href="#projects">Portfolio</a></li>
                 <li><a href="#contact">Contact</a></li>
                 <span class="nav-indicator" aria-hidden="true"></span>
@@ -98,7 +98,16 @@
                         <span class="motto-meaning">Remember [that you must] die.</span>
                     </blockquote>
 
-                    <a href="#" class="btn btn-primary about-download-btn">Download CV</a>
+                    <div class="about-buttons">
+                        <a href="#" class="btn btn-primary about-btn">
+                            <span class="btn-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg></span>
+                            Download CV
+                        </a>
+                        <a href="#projects" class="btn btn-secondary about-btn">
+                            <span class="btn-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg></span>
+                            View Projects
+                        </a>
+                    </div>
                 </div>
 
                 <div class="about-image-wrap">
@@ -114,8 +123,7 @@
                         </span>
                         <h3>Total Project</h3>
                     </div>
-                    <p>Lorem ipsum dolor sit amet,</p>
-                    <span class="about-stat-number">0</span>
+                    <span class="about-stat-number" id="stat-projects">0</span>
                 </article>
 
                 <article class="about-stat-card">
@@ -125,8 +133,7 @@
                         </span>
                         <h3>Certificates</h3>
                     </div>
-                    <p>Lorem ipsum dolor sit amet,</p>
-                    <span class="about-stat-number">0</span>
+                    <span class="about-stat-number" id="stat-certificates">0</span>
                 </article>
 
                 <article class="about-stat-card">
@@ -136,8 +143,7 @@
                         </span>
                         <h3>Years of Experience</h3>
                     </div>
-                    <p>Lorem ipsum dolor sit amet,</p>
-                    <span class="about-stat-number">0</span>
+                    <span class="about-stat-number" id="stat-experience">0</span>
                 </article>
             </div>
         </div>
@@ -145,51 +151,100 @@
 
     <!-- Bagian Portfolio -->
     <section id="projects" class="portfolio">
-        <h2>Portfolio Gallery</h2>
-        <div class="portfolio-carousel-wrapper">
-            <div class="portfolio-carousel" id="portfolioCarousel">
-                <div class="portfolio-card" data-index="0">
-                    <div class="portfolio-image">
-                        <img src="https://via.placeholder.com/500x500/5f3475/ffffff?text=Project+1" alt="Project 1">
+        <div class="portfolio-container">
+            <!-- Bagian Kiri: Navigasi -->
+            <div class="portfolio-sidebar">
+                <h2>Portfolio Gallery</h2>
+                <nav class="portfolio-nav">
+                    <button class="portfolio-tab active" data-target="group-project">Projects</button>
+                    <button class="portfolio-tab" data-target="group-design">Design</button>
+                    <button class="portfolio-tab" data-target="group-certificate">Certificate</button>
+                </nav>
+            </div>
+            
+            <!-- Bagian Kanan: Konten Slider -->
+            <div class="portfolio-content">
+                <!-- Group untuk Project -->
+                <div class="portfolio-slider-group active" id="group-project">
+                    <div class="portfolio-card style-primary">
+                        <div class="portfolio-card-inner">
+                            <img src="https://via.placeholder.com/600x800/8B0000/ffffff?text=Project+1" alt="Project 1">
+                            <div class="portfolio-card-info">
+                                <h3>Web Development A</h3>
+                            </div>
+                        </div>
                     </div>
-                    <div class="portfolio-info">
-                        <h3>Lorem Ipsum Dolor Sit</h3>
+                    <div class="portfolio-card style-secondary">
+                        <div class="portfolio-card-inner">
+                            <img src="https://via.placeholder.com/600x800/1A0000/ffffff?text=Project+2" alt="Project 2">
+                            <div class="portfolio-card-info">
+                                <h3>Web Development B</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="portfolio-card style-tertiary">
+                        <div class="portfolio-card-inner">
+                            <img src="https://via.placeholder.com/600x800/0A0A0A/ffffff?text=Project+3" alt="Project 3">
+                            <div class="portfolio-card-info">
+                                <h3>Web Development C</h3>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <div class="portfolio-card" data-index="1">
-                    <div class="portfolio-image">
-                        <img src="https://via.placeholder.com/500x500/708d81/ffffff?text=Project+2" alt="Project 2">
+                <!-- Group untuk Design -->
+                <div class="portfolio-slider-group" id="group-design">
+                    <div class="portfolio-card style-primary">
+                        <div class="portfolio-card-inner">
+                            <img src="https://via.placeholder.com/600x800/A61616/ffffff?text=Design+1" alt="Design 1">
+                            <div class="portfolio-card-info">
+                                <h3>UI/UX Design A</h3>
+                            </div>
+                        </div>
                     </div>
-                    <div class="portfolio-info">
-                        <h3>Consectetur Adipiscing</h3>
+                    <div class="portfolio-card style-secondary">
+                        <div class="portfolio-card-inner">
+                            <img src="https://via.placeholder.com/600x800/CF2626/ffffff?text=Design+2" alt="Design 2">
+                            <div class="portfolio-card-info">
+                                <h3>UI/UX Design B</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="portfolio-card style-tertiary">
+                        <div class="portfolio-card-inner">
+                            <img src="https://via.placeholder.com/600x800/3D0000/ffffff?text=Design+3" alt="Design 3">
+                            <div class="portfolio-card-info">
+                                <h3>UI/UX Design C</h3>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <div class="portfolio-card" data-index="2">
-                    <div class="portfolio-image">
-                        <img src="https://via.placeholder.com/500x500/893172/ffffff?text=Project+3" alt="Project 3">
+                <!-- Group untuk Certificate -->
+                <div class="portfolio-slider-group" id="group-certificate">
+                    <div class="portfolio-card style-primary">
+                        <div class="portfolio-card-inner">
+                            <img src="https://via.placeholder.com/600x800/E87676/ffffff?text=Cert+1" alt="Certificate 1">
+                            <div class="portfolio-card-info">
+                                <h3>Certificate A</h3>
+                            </div>
+                        </div>
                     </div>
-                    <div class="portfolio-info">
-                        <h3>Sed Do Eiusmod Tempor</h3>
+                    <div class="portfolio-card style-secondary">
+                        <div class="portfolio-card-inner">
+                            <img src="https://via.placeholder.com/600x800/CF2626/ffffff?text=Cert+2" alt="Certificate 2">
+                            <div class="portfolio-card-info">
+                                <h3>Certificate B</h3>
+                            </div>
+                        </div>
                     </div>
-                </div>
-
-                <div class="portfolio-card" data-index="3">
-                    <div class="portfolio-image">
-                        <img src="https://via.placeholder.com/500x500/213885/ffffff?text=Project+4" alt="Project 4">
-                    </div>
-                    <div class="portfolio-info">
-                        <h3>Incididunt Ut Labore</h3>
-                    </div>
-                </div>
-
-                <div class="portfolio-card" data-index="4">
-                    <div class="portfolio-image">
-                        <img src="https://via.placeholder.com/500x500/081849/ffffff?text=Project+5" alt="Project 5">
-                    </div>
-                    <div class="portfolio-info">
-                        <h3>Magna Aliqua Enim</h3>
+                    <div class="portfolio-card style-tertiary">
+                        <div class="portfolio-card-inner">
+                            <img src="https://via.placeholder.com/600x800/1A0000/ffffff?text=Cert+3" alt="Certificate 3">
+                            <div class="portfolio-card-info">
+                                <h3>Certificate C</h3>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
