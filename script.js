@@ -229,98 +229,196 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // ============================================
-// PORTFOLIO INTERACTIVE UI WITH GSAP
+// PORTFOLIO INTERACTIVE UI
 // ============================================
 
-const tabs = document.querySelectorAll(".portfolio-tab");
-const groups = document.querySelectorAll(".portfolio-slider-group");
+document.addEventListener('DOMContentLoaded', () => {
+    const tabs = document.querySelectorAll('.portfolio-tab');
+    const groups = document.querySelectorAll('.portfolio-slider-group');
 
-tabs.forEach(tab => {
-    tab.addEventListener("click", function() {
-        if(this.classList.contains("active")) return;
-        
-        tabs.forEach(t => t.classList.remove("active"));
-        this.classList.add("active");
-        
-        const targetId = this.getAttribute("data-target");
-        const nextGroup = document.getElementById(targetId);
-        const currentGroup = document.querySelector(".portfolio-slider-group.active");
-        
-        if (currentGroup) {
-            const currentCards = currentGroup.querySelectorAll(".portfolio-card");
-            // Slide out ke kanan
-            gsap.to(currentCards, {
-                x: 400,
-                opacity: 0,
-                duration: 0.5,
-                stagger: 0.05,
-                ease: "power2.in",
-                onComplete: () => {
-                    currentGroup.classList.remove("active");
-                    gsap.set(currentCards, { clearProps: "all" });
-                }
-            });
-        }
-        
-        if (nextGroup) {
-            nextGroup.classList.add("active");
-            const nextCards = nextGroup.querySelectorAll(".portfolio-card");
+    // 1. Tab Switching Logic
+    tabs.forEach(tab => {
+        tab.addEventListener('click', function() {
+            if (this.classList.contains('active')) return;
+
+            // Remove active from all tabs
+            tabs.forEach(t => t.classList.remove('active'));
+            this.classList.add('active');
+
+            // Find target group
+            const targetId = this.getAttribute('data-target');
             
-            // Slide in dari kanan
-            gsap.from(nextCards, {
-                x: 400,
-                opacity: 0,
-                duration: 0.8,
-                stagger: 0.1,
-                ease: "power3.out",
-                delay: 0.2
-            });
-        }
+            // Hide all groups
+            groups.forEach(g => g.classList.remove('active'));
+            
+            // Show target
+            const nextGroup = document.getElementById(targetId);
+            if (nextGroup) {
+                nextGroup.classList.add('active');
+            }
+        });
     });
-});
 
-// Card Click Event for Dummy Modal
-document.querySelectorAll(".portfolio-card").forEach(card => {
-    card.addEventListener("click", function() {
-        const title = this.querySelector("h3").innerText;
-        const img = this.querySelector("img").src;
-        openProjectModal(title, "Detail dari " + title + ". Ini adalah project dummy interaktif.", img);
-    });
-});
-
-function openProjectModal(title, description, image) {
-    const modal = document.getElementById("projectModal");
+    const portfolioSection = document.getElementById('projects');
     
-    document.getElementById("modalTitle").textContent = title;
-    document.getElementById("modalDescription").textContent = description;
-    document.getElementById("modalLink").href = "#";
-    document.getElementById("modalImage").src = image;
+    if (portfolioSection) {
+        let scrollTl;
+        let pinTrigger;
+        let entranceTrigger;
 
-    modal.classList.add("show");
-    document.body.style.overflow = "hidden";
+        const setupPortfolioAnimations = () => {
+            // Bersihkan instansiasi GSAP lama jika ada
+            if (scrollTl) scrollTl.kill();
+            if (pinTrigger) pinTrigger.kill();
+            if (entranceTrigger) entranceTrigger.kill();
+
+            const activeGroup = document.querySelector('.portfolio-slider-group.active');
+            if (!activeGroup) return;
+
+            const cards = activeGroup.querySelectorAll('.portfolio-card');
+            if (cards.length === 0) return;
+
+            // Pastikan inline style dari interaksi sebelumnya bersih
+            gsap.set(cards, { clearProps: 'all' });
+
+            // BUNGKUS SETIAP CARD KE DALAM WRAPPER.
+            // Ini PENTING untuk memisahkan properti pergeseran:
+            // - Wrapper dianimasikan oleh scroll scrub (menumpuk posisi di jalur scroll)
+            // - Card di dalamnya dianimasikan oleh entrance trigger (masuk dari 100vw ke x 0)
+            // Dengan gini, 2 animasi "x" di GSAP tidak akan bentrok / overwrite satu sama lain yang menyebabkan card hilang.
+            cards.forEach((card, index) => {
+                let wrapper = card.parentElement;
+                if (!wrapper.classList.contains('card-wrapper')) {
+                    wrapper = document.createElement('div');
+                    wrapper.className = 'card-wrapper';
+                    // Tiru dimensi ruang card flex
+                    wrapper.style.width = '320px';
+                    wrapper.style.height = '490px';
+                    wrapper.style.flexShrink = '0';
+                    wrapper.style.position = 'relative';
+                    
+                    card.parentNode.insertBefore(wrapper, card);
+                    wrapper.appendChild(card);
+                }
+                // Susun z-index di wrapper. Yang lebih jauh(kanan) punya z-index menimpa pos kiri
+                wrapper.style.zIndex = index + 1;
+            });
+
+            const wrappers = activeGroup.querySelectorAll('.card-wrapper');
+            // Sedikit delay utk memastikan element dirender dan ada perhitungan width 
+            setTimeout(() => {
+                // Jarak paling jauh: offsetLeft dari tiket wrapper terakhir dalam track group
+                const maxTravel = wrappers[wrappers.length - 1].offsetLeft;
+
+                // --- 1. Mode Scroll-Driven Stacking ---
+                scrollTl = gsap.timeline();
+
+                wrappers.forEach((wrapper) => {
+                    let travelDistance = wrapper.offsetLeft;
+                    if (travelDistance > 0) {
+                        scrollTl.fromTo(wrapper, 
+                            { x: 0 },
+                            {
+                                x: -travelDistance, // Geser ke kiri menuju letak x:0 di parent track (tengah layar)
+                                ease: 'none',
+                                duration: travelDistance / maxTravel 
+                            },
+                            0
+                        );
+                    }
+                });
+
+                pinTrigger = ScrollTrigger.create({
+                    animation: scrollTl,
+                    trigger: portfolioSection,
+                    start: 'top top',
+                    end: () => '+=' + (maxTravel * 1.5), 
+                    pin: true,
+                    scrub: 1, 
+                    invalidateOnRefresh: true,
+                });
+
+                // --- 2. Mode Entrance Animation ---
+                // Saat memasuki viewport, Card akan slide stagger menuju 0 di dalam posisinya masing-masing 
+                const playEntrance = () => {
+                    gsap.fromTo(cards, 
+                        { x: '100vw', opacity: 0 }, 
+                        {
+                            x: 0,
+                            opacity: 1,
+                            duration: 0.8,
+                            stagger: 0.12,
+                            ease: 'power3.out',
+                            overwrite: 'auto',
+                            onStart: () => cards.forEach(c => c.style.transition = 'none'),
+                            onComplete: () => cards.forEach(c => c.style.transition = '') // Kembalikan transisi hover
+                        }
+                    );
+                };
+
+                const resetEntrance = () => {
+                    gsap.set(cards, { x: '100vw', opacity: 0 });
+                };
+
+                entranceTrigger = ScrollTrigger.create({
+                    trigger: portfolioSection,
+                    start: 'top 80%', 
+                    // Menambahkan padding dari pin agar animasi masuk tetap solid saat scroll kebawah terus
+                    end: () => '+=' + (portfolioSection.offsetHeight + (maxTravel * 2.5)), 
+                    onEnter: playEntrance,
+                    onEnterBack: playEntrance,
+                    // Hanya matikan/reser opacity kalau layar digulir KE ATAS menembus Header agar animasi bisa berulang
+                    onLeaveBack: resetEntrance
+                });
+
+                ScrollTrigger.refresh();
+            }, 50);
+        };
+
+        // Render perdana pembungkus container
+        setTimeout(setupPortfolioAnimations, 100);
+
+        // Update interaksi ketika tab navigasi diganti
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                if (window.scrollY > portfolioSection.offsetTop) {
+                    window.scrollTo({ top: portfolioSection.offsetTop, behavior: 'auto' });
+                }
+                setTimeout(() => {
+                    setupPortfolioAnimations();
+                }, 100);   
+            });
+        });
+        
+        // Inisiasi awal card bersembunyi (100vw) sebelum trigger entrance menyala ketika di-scroll
+        const allCards = document.querySelectorAll('.portfolio-card');
+        gsap.set(allCards, { x: '100vw', opacity: 0 });
+    }
+});
+
+// Modal Logic
+function openProjectModal(title, description, imageSrc, link) {
+    document.getElementById('modalTitle').textContent = title;
+    document.getElementById('modalDescription').textContent = description;
+    document.getElementById('modalImage').src = imageSrc;
+    document.getElementById('modalLink').href = link;
+    const modal = document.getElementById('projectModal');
+    if (modal) modal.classList.add('show');
+    document.body.style.overflow = 'hidden';
 }
 
 function closeProjectModal() {
     const modal = document.getElementById('projectModal');
-    modal.classList.remove('show');
-    document.body.style.overflow = 'auto';
+    if (modal) modal.classList.remove('show');
+    document.body.style.overflow = '';
 }
 
-// Close modal ketika klik di luar content
-document.getElementById('projectModal').addEventListener('click', function(event) {
-    if (event.target === this) {
+window.addEventListener('click', (e) => {
+    const modal = document.getElementById('projectModal');
+    if (e.target === modal) {
         closeProjectModal();
     }
 });
-
-// Close modal dengan tombol Escape
-document.addEventListener('keydown', function(event) {
-    if (event.key === 'Escape') {
-        closeProjectModal();
-    }
-});
-
-
 
 // ============================================
 // CONTACT SECTION FUNCTIONALITY
