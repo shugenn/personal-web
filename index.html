@@ -9,6 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Arvo:ital,wght@0,400;0,700;1,400;1,700&family=Cinzel:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
 </head>
 <body>
     <!-- Bagian Header/Navigasi -->
@@ -152,98 +153,86 @@
     <!-- Bagian Portfolio -->
     <section id="projects" class="portfolio">
         <div class="portfolio-container">
-            <!-- Bagian Kiri: Navigasi -->
+            <!-- Bagian Kiri: Navigasi & Judul -->
             <div class="portfolio-sidebar">
-                <h2>Portfolio Gallery</h2>
+                <h2 class="section-title portfolio-heading">Portfolio Gallery</h2>
                 <nav class="portfolio-nav">
-                    <button class="portfolio-tab active" data-target="group-project">Projects</button>
+                    <button class="portfolio-tab active" data-target="group-project">Project</button>
                     <button class="portfolio-tab" data-target="group-design">Design</button>
                     <button class="portfolio-tab" data-target="group-certificate">Certificate</button>
                 </nav>
             </div>
             
-            <!-- Bagian Kanan: Konten Slider -->
+            <!-- Bagian Kanan: Konten Carousel -->
             <div class="portfolio-content">
                 <!-- Group untuk Project -->
                 <div class="portfolio-slider-group active" id="group-project">
-                    <div class="portfolio-card style-primary">
-                        <div class="portfolio-card-inner">
-                            <img src="https://via.placeholder.com/600x800/8B0000/ffffff?text=Project+1" alt="Project 1">
-                            <div class="portfolio-card-info">
-                                <h3>Web Development A</h3>
-                            </div>
+                    <div class="portfolio-card">
+                        <img src="https://images.unsplash.com/photo-1547658719-da2b51169166?auto=format&fit=crop&q=80&w=800" alt="Project 1" class="portfolio-card-bg">
+                        <div class="portfolio-card-info">
+                            <h3 class="portfolio-card-title">E-COMMERCE</h3>
                         </div>
                     </div>
-                    <div class="portfolio-card style-secondary">
-                        <div class="portfolio-card-inner">
-                            <img src="https://via.placeholder.com/600x800/1A0000/ffffff?text=Project+2" alt="Project 2">
-                            <div class="portfolio-card-info">
-                                <h3>Web Development B</h3>
-                            </div>
+                    <div class="portfolio-card">
+                        <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=800" alt="Project 2" class="portfolio-card-bg">
+                        <div class="portfolio-card-info">
+                            <h3 class="portfolio-card-title">DASHBOARD</h3>
                         </div>
                     </div>
-                    <div class="portfolio-card style-tertiary">
-                        <div class="portfolio-card-inner">
-                            <img src="https://via.placeholder.com/600x800/0A0A0A/ffffff?text=Project+3" alt="Project 3">
-                            <div class="portfolio-card-info">
-                                <h3>Web Development C</h3>
-                            </div>
+                    <div class="portfolio-card">
+                        <img src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&q=80&w=800" alt="Project 3" class="portfolio-card-bg">
+                        <div class="portfolio-card-info">
+                            <h3 class="portfolio-card-title">MOBILE APP</h3>
+                        </div>
+                    </div>
+                    <div class="portfolio-card">
+                        <img src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&q=80&w=800" alt="Project 4" class="portfolio-card-bg">
+                        <div class="portfolio-card-info">
+                            <h3 class="portfolio-card-title">PORTFOLIO</h3>
                         </div>
                     </div>
                 </div>
 
                 <!-- Group untuk Design -->
                 <div class="portfolio-slider-group" id="group-design">
-                    <div class="portfolio-card style-primary">
-                        <div class="portfolio-card-inner">
-                            <img src="https://via.placeholder.com/600x800/A61616/ffffff?text=Design+1" alt="Design 1">
-                            <div class="portfolio-card-info">
-                                <h3>UI/UX Design A</h3>
-                            </div>
+                    <div class="portfolio-card">
+                        <img src="https://images.unsplash.com/photo-1561070791-2526d30994b5?auto=format&fit=crop&q=80&w=800" alt="Design 1" class="portfolio-card-bg">
+                        <div class="portfolio-card-info">
+                            <h3 class="portfolio-card-title">BRANDING</h3>
                         </div>
                     </div>
-                    <div class="portfolio-card style-secondary">
-                        <div class="portfolio-card-inner">
-                            <img src="https://via.placeholder.com/600x800/CF2626/ffffff?text=Design+2" alt="Design 2">
-                            <div class="portfolio-card-info">
-                                <h3>UI/UX Design B</h3>
-                            </div>
+                    <div class="portfolio-card">
+                        <img src="https://images.unsplash.com/photo-1581291518857-4e27b48ff24e?auto=format&fit=crop&q=80&w=800" alt="Design 2" class="portfolio-card-bg">
+                        <div class="portfolio-card-info">
+                            <h3 class="portfolio-card-title">UI/UX</h3>
                         </div>
                     </div>
-                    <div class="portfolio-card style-tertiary">
-                        <div class="portfolio-card-inner">
-                            <img src="https://via.placeholder.com/600x800/3D0000/ffffff?text=Design+3" alt="Design 3">
-                            <div class="portfolio-card-info">
-                                <h3>UI/UX Design C</h3>
-                            </div>
+                    <div class="portfolio-card">
+                        <img src="https://images.unsplash.com/photo-1626785774573-4b799315345d?auto=format&fit=crop&q=80&w=800" alt="Design 3" class="portfolio-card-bg">
+                        <div class="portfolio-card-info">
+                            <h3 class="portfolio-card-title">TYPOGRAPHY</h3>
                         </div>
                     </div>
                 </div>
 
                 <!-- Group untuk Certificate -->
                 <div class="portfolio-slider-group" id="group-certificate">
-                    <div class="portfolio-card style-primary">
-                        <div class="portfolio-card-inner">
-                            <img src="https://via.placeholder.com/600x800/E87676/ffffff?text=Cert+1" alt="Certificate 1">
-                            <div class="portfolio-card-info">
-                                <h3>Certificate A</h3>
-                            </div>
+                    <div class="portfolio-card">
+                        <img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&q=80&w=800" alt="Certificate 1" class="portfolio-card-bg">
+                        <div class="portfolio-card-info">
+                            <h3 class="portfolio-card-title">FRONTEND</h3>
                         </div>
                     </div>
-                    <div class="portfolio-card style-secondary">
-                        <div class="portfolio-card-inner">
-                            <img src="https://via.placeholder.com/600x800/CF2626/ffffff?text=Cert+2" alt="Certificate 2">
-                            <div class="portfolio-card-info">
-                                <h3>Certificate B</h3>
-                            </div>
+                    <div class="portfolio-card">
+                        <img src="https://images.unsplash.com/photo-1516321497487-e288fb19713f?auto=format&fit=crop&q=80&w=800" alt="Certificate 2" class="portfolio-card-bg">
+                        <div class="portfolio-card-info">
+                            <h3 class="portfolio-card-title">BACKEND</h3>
                         </div>
                     </div>
-                    <div class="portfolio-card style-tertiary">
-                        <div class="portfolio-card-inner">
-                            <img src="https://via.placeholder.com/600x800/1A0000/ffffff?text=Cert+3" alt="Certificate 3">
-                            <div class="portfolio-card-info">
-                                <h3>Certificate C</h3>
-                            </div>
+                    <div class="portfolio-card">
+                        <img src="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&q=80&w=800" alt="Certificate 3" class="portfolio-card-bg">
+                        <div class="portfolio-card-info">
+                            <h3 class="portfolio-card-title">FULLSTACK</h3>
                         </div>
                     </div>
                 </div>
@@ -296,3 +285,4 @@
     <script src="script.js"></script>
 </body>
 </html>
+

@@ -722,54 +722,62 @@ nav {
 }
 
 /* Portfolio Section */
+
 .portfolio {
-    padding: 6rem 2rem;
+    padding: 6rem 0;
     background-color: #0A0A0A;
-    overflow: hidden;
-    min-height: 80vh;
+    color: #FFE5E5;
+    overflow: hidden; /* Hide anything outside */
+    position: relative;
+    height: 100vh; /* Agar bisa menampung tinggi layar penuh jika perlu */
+    display: flex;
+    align-items: center;
 }
 
 .portfolio-container {
-    max-width: 1200px;
-    margin: 0 auto;
+    width: 100%; /* Penuhi layar */
+    margin: 0;
+    padding: 0;
     display: flex;
-    gap: 4rem;
-    align-items: center;
+    align-items: center; /* Vertikal center */
+    height: 100%;
+    position: relative;
 }
 
 /* Bagian Kiri: Sidebar */
 .portfolio-sidebar {
-    flex: 0 0 250px;
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
+    width: 40%; 
+    padding-left: 10%; /* Beri jarak dari kiri layar */
+    flex-shrink: 0;
+    z-index: 10;
 }
 
-.portfolio-sidebar h2 {
-    font-size: 2.5rem;
+.portfolio-heading {
+    font-size: 4.5rem;
+    font-weight: 900;
+    margin-bottom: 2rem;
     color: #FFE5E5;
-    line-height: 1.2;
     text-align: left;
 }
 
 .portfolio-nav {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 1.5rem;
 }
 
 .portfolio-tab {
     background: transparent;
     border: none;
-    color: rgba(255, 229, 229, 0.5);
-    font-size: 1.2rem;
-    font-family: 'Arvo', serif;
+    color: rgba(232, 118, 118, 0.5);
+    font-size: 2rem;
+    font-weight: 700;
     text-align: left;
-    padding: 0.5rem 0;
     cursor: pointer;
-    position: relative;
+    padding: 0.5rem 0;
     transition: all 0.3s ease;
-    width: fit-content;
+    position: relative;
+    width: max-content;
 }
 
 .portfolio-tab::after {
@@ -777,131 +785,104 @@ nav {
     position: absolute;
     bottom: 0;
     left: 0;
-    width: 0;
-    height: 2px;
-    background: linear-gradient(90deg, #CF2626, #E87676);
+    width: 0%;
+    height: 3px;
+    background-color: #DB4D4D;
     transition: width 0.3s ease;
 }
 
 .portfolio-tab:hover {
-    color: rgba(255, 229, 229, 0.8);
+    color: #DB4D4D;
+    transform: translateX(10px);
 }
 
 .portfolio-tab.active {
-    color: #CF2626;
-    font-size: 1.5rem;
-    font-weight: 700;
+    color: #DB4D4D;
 }
 
 .portfolio-tab.active::after {
     width: 100%;
 }
 
-/* Bagian Kanan: Konten Slider */
+/* Bagian Kanan: Konten Carousel */
 .portfolio-content {
-    flex: 1;
-    position: relative;
-    height: 600px;
-    display: flex;
-    align-items: center;
-    perspective: 1000px;
+    /* Mulai dari 50% layar */
+    position: absolute;
+    left: 50%;
+    width: max-content; /* Memanjang ke kanan mengikuti isinya */
+    overflow: visible; /* Track tidak boleh scroll terpotong */
 }
 
 .portfolio-slider-group {
-    position: absolute;
-    top: 50%;
-    left: 0;
-    transform: translateY(-50%);
-    width: 100%;
-    height: 500px;
-    display: flex;
+    display: none; 
     align-items: center;
-    opacity: 0;
-    pointer-events: none;
-    visibility: hidden;
+    gap: 2rem; 
+    padding-left: 15vw; 
+    padding-right: 15vw; 
 }
 
 .portfolio-slider-group.active {
-    opacity: 1;
-    pointer-events: auto;
-    visibility: visible;
+    display: flex;
 }
 
 .portfolio-card {
-    position: absolute;
     width: 320px;
-    height: 480px;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 15px 35px rgba(0,0,0,0.5);
-    transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.6s ease;
-    opacity: 0;
-    transform: translateX(100px) scale(0.8);
-    cursor: pointer;
-}
-
-/* Susunan tumpukan kartu (3 cards overlap ke kanan) */
-.portfolio-slider-group.active .portfolio-card:nth-child(1) {
-    transform: translateX(0) scale(1) translateZ(0);
-    z-index: 3;
-    opacity: 1;
-}
-
-.portfolio-slider-group.active .portfolio-card:nth-child(2) {
-    transform: translateX(120px) scale(0.9) translateZ(-50px);
-    z-index: 2;
-    opacity: 0.8;
-}
-
-.portfolio-slider-group.active .portfolio-card:nth-child(3) {
-    transform: translateX(240px) scale(0.8) translateZ(-100px);
-    z-index: 1;
-    opacity: 0.6;
-}
-
-/* Efek card keluar ke arah sumbu X negatif saat ditimpa tab baru yg masuk dari X positif
-   *(Akan dikontrol via GSAP, tapi sediakan default transition css ini)* */
-
-/* Hover effect di kartu terdepan */
-.portfolio-slider-group.active .portfolio-card:nth-child(1):hover {
-    transform: translateX(-15px) scale(1.02) translateZ(0);
-    box-shadow: 0 20px 45px rgba(207, 38, 38, 0.4);
-}
-
-.portfolio-card-inner {
-    width: 100%;
-    height: 100%;
+    height: 490px;
+    border-radius: 20px;
     position: relative;
-    background: #1A0000;
+    overflow: hidden;
+    flex-shrink: 0;
+    cursor: pointer;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    transition: transform 0.4s ease;
 }
 
-.portfolio-card-inner img {
+.portfolio-card-bg {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.5s ease;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    filter: brightness(0.6);
+    transition: filter 0.4s ease, transform 0.4s ease;
 }
 
-.portfolio-card:hover .portfolio-card-inner img {
-    transform: scale(1.05);
+.portfolio-card:hover .portfolio-card-bg {
+    filter: brightness(0.9);
+    transform: scale(1.05); /* Slight zoom on hover */
 }
 
-.portfolio-card-info {
+/* Gradient overlay untuk teks */
+.portfolio-card::after {
+    content: '';
     position: absolute;
     bottom: 0;
     left: 0;
     width: 100%;
-    padding: 2rem 1.5rem;
-    background: linear-gradient(to top, rgba(10,10,10,0.95), transparent);
-    color: #FFE5E5;
+    height: 50%;
+    background: linear-gradient(to top, rgba(0,0,0, 0.9) 0%, rgba(0,0,0, 0) 100%);
+    z-index: 2;
 }
 
-.portfolio-card-info h3 {
-    margin: 0;
-    font-size: 1.4rem;
-    font-weight: 700;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+.portfolio-card-info {
+    position: absolute;
+    bottom: 2rem;
+    left: 1.5rem;
+    z-index: 3;
 }
+
+.portfolio-card-title {
+    color: #FFFFFF;
+    font-size: 1.8rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    margin: 0;
+    line-height: 1.2;
+}
+
+
 
 /* Modal Styling */
 .modal {
