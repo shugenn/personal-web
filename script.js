@@ -605,7 +605,7 @@ window.addEventListener('click', (e) => {
     const modal = document.getElementById('projectModal');
     if (e.target === modal) closeProjectModal();
 });
-
+/*
 // ============================================
 // CONTACT SECTION FUNCTIONALITY
 // ============================================
@@ -662,7 +662,7 @@ if (copyEmailBtn && copyStatus) {
             copyStatus.textContent = `Copy failed. Please use: ${email}`;
         }
     });
-}
+} */
 
 // ============================================
 // ABOUT STATS COMPONENT
@@ -688,7 +688,7 @@ function updateAboutStats() {
 
 document.addEventListener('DOMContentLoaded', updateAboutStats);
 
-if (commentForm) {
+/* if (commentForm) {
     commentForm.addEventListener('submit', (e) => {
         e.preventDefault();
         const formData = new FormData(commentForm);
@@ -703,6 +703,6 @@ if (commentForm) {
     });
 }
 
-renderComments();
+renderComments(); */
 
 console.log('Website portfolio berhasil dimuat!');
