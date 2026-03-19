@@ -61,12 +61,14 @@ function updateActiveNavByScroll() {
 
     const header = document.querySelector('header');
     const headerOffset = header ? header.offsetHeight + 20 : 90;
-    const scrollTarget = window.scrollY + headerOffset;
 
+    // Gunakan getBoundingClientRect() agar akurat meski section di-pin GSAP
     let currentSection = observedSections[0];
 
     observedSections.forEach(section => {
-        if (scrollTarget >= section.offsetTop) {
+        const rect = section.getBoundingClientRect();
+        // Section dianggap aktif jika top-nya sudah melewati batas header
+        if (rect.top <= headerOffset) {
             currentSection = section;
         }
     });
@@ -687,6 +689,11 @@ function updateAboutStats() {
 }
 
 document.addEventListener('DOMContentLoaded', updateAboutStats);
+
+// Tambahkan ini di paling bawah script.js, setelah renderComments()
+window.addEventListener('load', () => {
+    updateActiveNavByScroll();
+});
 
 /* if (commentForm) {
     commentForm.addEventListener('submit', (e) => {
