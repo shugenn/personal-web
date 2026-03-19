@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Detail – AJWEB</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Arvo:ital,wght@0,400;0,700;1,400;1,700&family=Cinzel:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        /* ─── Reset & Base ─────────────────────────────── */
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --red-deep:    #8B0000;
+            --red-mid:     #CF2626;
+            --red-bright:  #DB4D4D;
+            --red-soft:    #E87676;
+            --red-pale:    #F5ABAB;
+            --cream:       #FFE5E5;
+            --bg:          #0A0A0A;
+            --bg-card:     #1A0000;
+            --bg-card2:    #140505;
+            --border:      rgba(207,38,38,0.18);
+            --border-hover:rgba(207,38,38,0.5);
+            --text-muted:  rgba(245,171,171,0.75);
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Arvo', serif;
+            background-color: var(--bg);
+            color: var(--text-muted);
+            min-height: 100vh;
+            line-height: 1.7;
+        }
+
+        a { text-decoration: none; color: inherit; }
+
+        /* ─── Background Noise Texture ──────────────────── */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* ─── Header ────────────────────────────────────── */
+        .pd-header {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 100;
+            padding: 1rem 0;
+            background: linear-gradient(180deg, rgba(10,10,10,0.92) 0%, rgba(10,10,10,0.75) 100%);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(232,118,118,0.07);
+        }
+
+        .pd-header-inner {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 2.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            font-family: 'Cinzel', serif;
+            font-size: 1.45rem;
+            font-weight: 700;
+            color: var(--cream);
+            letter-spacing: 0.05em;
+        }
+
+        .logo span {
+            background: linear-gradient(135deg, var(--red-mid), var(--red-soft));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 8px rgba(207,38,38,0.5));
+        }
+
+        /* ─── Breadcrumb Bar ────────────────────────────── */
+        .pd-breadcrumb-bar {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 6.5rem 2.5rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            font-size: 0.88rem;
+            color: var(--red-pale);
+            opacity: 0.8;
+            flex-wrap: wrap;
+        }
+
+        .pd-back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+            padding: 0.42rem 1rem;
+            background: rgba(207,38,38,0.12);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--cream);
+            font-size: 0.88rem;
+            font-weight: 600;
+            transition: all 0.25s ease;
+            cursor: pointer;
+            font-family: 'Arvo', serif;
+        }
+
+        .pd-back-btn:hover {
+            background: rgba(207,38,38,0.25);
+            border-color: var(--red-mid);
+            transform: translateX(-4px);
+        }
+
+        .pd-sep {
+            color: rgba(232,118,118,0.35);
+            font-size: 1rem;
+        }
+
+        .pd-crumb {
+            color: var(--red-pale);
+            transition: color 0.2s;
+        }
+
+        .pd-crumb:hover { color: var(--cream); }
+
+        .pd-crumb-current {
+            color: var(--red-bright);
+            font-weight: 700;
+        }
+
+        /* ─── Main Layout ───────────────────────────────── */
+        .pd-main {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 2.5rem 2.5rem 6rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 5rem;
+            align-items: start;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ─── LEFT COLUMN ───────────────────────────────── */
+        .pd-left { display: flex; flex-direction: column; gap: 2rem; }
+
+        /* Title */
+        .pd-title {
+            font-family: 'Cinzel', serif;
+            font-size: clamp(2rem, 3.5vw, 3rem);
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--cream) 0%, var(--red-pale) 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1.15;
+            letter-spacing: 0.02em;
+        }
+
+        /* Divider line under title */
+        .pd-title-line {
+            width: 60px;
+            height: 3px;
+            border-radius: 2px;
+            background: linear-gradient(90deg, var(--red-mid), var(--red-soft));
+            box-shadow: 0 0 12px rgba(207,38,38,0.5);
+            margin-top: -1rem;
+        }
+
+        /* Description */
+        .pd-desc {
+            font-size: 1rem;
+            line-height: 1.9;
+            color: var(--text-muted);
+        }
+
+        /* GitHub Button */
+        .pd-github-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            background: rgba(228,228,228,0.08);
+            border: 1px solid rgba(255,255,255,0.15);
+            color: var(--cream);
+            padding: 0.75rem 1.5rem;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 1rem;
+            width: max-content;
+            transition: all 0.3s ease;
+            letter-spacing: 0.05em;
+        }
+
+        .pd-github-btn:hover {
+            background: rgba(255,255,255,0.15);
+            border-color: rgba(255,255,255,0.4);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+        }
+
+        /* Section Label */
+        .pd-section { display: flex; flex-direction: column; gap: 1rem; }
+
+        .pd-section-label {
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+            font-family: 'Cinzel', serif;
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--cream);
+            letter-spacing: 0.06em;
+        }
+
+        .pd-section-label svg { color: var(--red-mid); flex-shrink: 0; }
+
+        /* Tech Tags */
+        .pd-tech-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.65rem;
+        }
+
+        .pd-tag {
+            padding: 0.45rem 1rem;
+            border-radius: 8px;
+            background: rgba(207,38,38,0.1);
+            border: 1px solid rgba(207,38,38,0.25);
+            color: var(--red-pale);
+            font-size: 0.88rem;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            transition: all 0.25s ease;
+            cursor: default;
+        }
+
+        .pd-tag:hover {
+            background: rgba(207,38,38,0.22);
+            border-color: var(--red-mid);
+            color: var(--cream);
+            transform: translateY(-2px);
+        }
+
+        /* Key Features */
+        .pd-features-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+            list-style: none;
+        }
+
+        .pd-features-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            padding: 0.7rem 1rem;
+            border-radius: 10px;
+            background: rgba(26,0,0,0.5);
+            border: 1px solid rgba(207,38,38,0.12);
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            transition: all 0.25s ease;
+        }
+
+        .pd-features-list li:hover {
+            background: rgba(40,0,0,0.7);
+            border-color: rgba(207,38,38,0.3);
+            color: var(--cream);
+            transform: translateX(4px);
+        }
+
+        .feat-bullet {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--red-mid);
+            box-shadow: 0 0 8px rgba(207,38,38,0.6);
+            flex-shrink: 0;
+            margin-top: 0.45rem;
+        }
+
+        /* ─── RIGHT COLUMN – Image Slider ───────────────── */
+        .pd-right {
+            position: sticky;
+            top: 6rem;
+        }
+
+        .pd-slider-wrap {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 4 / 3;
+            border-radius: 20px;
+            overflow: hidden;
+            border: 2px solid rgba(207,38,38,0.3);
+            box-shadow: 0 0 40px rgba(139,0,0,0.25), 0 20px 60px rgba(0,0,0,0.6);
+            background: var(--bg-card);
+        }
+
+        .pd-slide {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .pd-slide.active { opacity: 1; }
+
+        .pd-slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        /* Gradient overlay bottom */
+        .pd-slider-wrap::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            height: 35%;
+            background: linear-gradient(to top, rgba(10,0,0,0.7) 0%, transparent 100%);
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        /* Nav Buttons */
+        .pd-slider-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 5;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: rgba(10,0,0,0.55);
+            border: 1px solid rgba(207,38,38,0.35);
+            color: var(--cream);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            backdrop-filter: blur(8px);
+            transition: all 0.25s ease;
+        }
+
+        .pd-slider-btn:hover {
+            background: rgba(207,38,38,0.35);
+            border-color: var(--red-mid);
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .pd-slider-prev { left: 14px; }
+        .pd-slider-next { right: 14px; }
+
+        /* Dots */
+        .pd-slider-dots {
+            position: absolute;
+            bottom: 14px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 5;
+            display: flex;
+            gap: 7px;
+        }
+
+        .pd-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.35);
+            cursor: pointer;
+            transition: all 0.25s ease;
+            border: none;
+        }
+
+        .pd-dot.active {
+            background: var(--red-bright);
+            box-shadow: 0 0 8px rgba(219,77,77,0.7);
+            width: 22px;
+            border-radius: 4px;
+        }
+
+        /* Image counter */
+        .pd-img-counter {
+            position: absolute;
+            top: 14px;
+            right: 14px;
+            z-index: 5;
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: var(--cream);
+            background: rgba(0,0,0,0.5);
+            padding: 0.25rem 0.65rem;
+            border-radius: 20px;
+            backdrop-filter: blur(6px);
+            letter-spacing: 0.05em;
+        }
+
+        /* Stats bar below slider */
+        .pd-stats-bar {
+            display: flex;
+            gap: 0;
+            margin-top: 1.2rem;
+            border-radius: 14px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+
+        .pd-stat-item {
+            flex: 1;
+            padding: 1rem 0.5rem;
+            text-align: center;
+            background: var(--bg-card2);
+            border-right: 1px solid var(--border);
+            transition: background 0.2s ease;
+        }
+
+        .pd-stat-item:last-child { border-right: none; }
+        .pd-stat-item:hover { background: rgba(40,0,0,0.8); }
+
+        .pd-stat-val {
+            display: block;
+            font-family: 'Cinzel', serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--red-bright);
+            text-shadow: 0 0 10px rgba(219,77,77,0.4);
+        }
+
+        .pd-stat-lbl {
+            display: block;
+            font-size: 0.72rem;
+            color: var(--red-pale);
+            margin-top: 0.15rem;
+            letter-spacing: 0.06em;
+            opacity: 0.8;
+        }
+
+        /* Live Demo button */
+        .pd-live-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.6rem;
+            width: 100%;
+            margin-top: 1rem;
+            padding: 0.85rem;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--red-mid), var(--red-deep));
+            color: var(--cream);
+            font-weight: 700;
+            font-size: 0.95rem;
+            letter-spacing: 0.05em;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 18px rgba(207,38,38,0.35);
+        }
+
+        .pd-live-btn:hover {
+            background: linear-gradient(135deg, var(--red-bright), var(--red-mid));
+            transform: translateY(-2px);
+            box-shadow: 0 8px 26px rgba(207,38,38,0.5);
+        }
+
+        /* ─── Page Enter Animation ──────────────────────── */
+        .pd-left > * {
+            opacity: 0;
+            transform: translateX(-30px);
+            animation: slideInLeft 0.6s ease forwards;
+        }
+
+        .pd-left > *:nth-child(1) { animation-delay: 0.1s; }
+        .pd-left > *:nth-child(2) { animation-delay: 0.18s; }
+        .pd-left > *:nth-child(3) { animation-delay: 0.26s; }
+        .pd-left > *:nth-child(4) { animation-delay: 0.34s; }
+        .pd-left > *:nth-child(5) { animation-delay: 0.42s; }
+        .pd-left > *:nth-child(6) { animation-delay: 0.5s; }
+
+        .pd-right {
+            opacity: 0;
+            transform: translateX(30px);
+            animation: slideInRight 0.6s ease 0.15s forwards;
+        }
+
+        @keyframes slideInLeft {
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes slideInRight {
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .pd-breadcrumb-bar {
+            opacity: 0;
+            animation: fadeDown 0.5s ease 0.05s forwards;
+        }
+
+        @keyframes fadeDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ─── Responsive ────────────────────────────────── */
+        @media (max-width: 960px) {
+            .pd-main {
+                grid-template-columns: 1fr;
+                gap: 2.5rem;
+                padding: 2rem 1.5rem 5rem;
+            }
+
+            .pd-right { position: static; }
+
+            .pd-breadcrumb-bar { padding: 6rem 1.5rem 0; }
+        }
+
+        @media (max-width: 520px) {
+            .pd-header-inner { padding: 0 1.2rem; }
+            .pd-main { padding: 2rem 1.2rem 4rem; }
+            .pd-breadcrumb-bar { padding: 6rem 1.2rem 0; font-size: 0.8rem; }
+            .pd-title { font-size: 1.7rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ─── Header ─────────────────────────────────── -->
+    <header class="pd-header">
+        <div class="pd-header-inner">
+            <a href="index.html" class="logo"><span>AJ</span>WEB</a>
+        </div>
+    </header>
+
+    <!-- ─── Breadcrumb ─────────────────────────────── -->
+    <div class="pd-breadcrumb-bar">
+        <button class="pd-back-btn" onclick="goBack()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+            Back
+        </button>
+        <span class="pd-sep">›</span>
+        <a href="index.html#projects" class="pd-crumb">Portfolio</a>
+        <span class="pd-sep">›</span>
+        <span class="pd-crumb-current" id="breadcrumb-title">Project Detail</span>
+    </div>
+
+    <!-- ─── Main ───────────────────────────────────── -->
+    <main class="pd-main">
+
+        <!-- LEFT -->
+        <div class="pd-left">
+
+            <h1 class="pd-title" id="pd-title">E-Commerce Platform</h1>
+            <div class="pd-title-line"></div>
+
+            <p class="pd-desc" id="pd-desc">
+                Platform e-commerce modern yang dibangun dengan teknologi terkini. 
+                Menampilkan sistem manajemen produk, keranjang belanja dinamis, 
+                integrasi payment gateway, dan dashboard admin yang komprehensif. 
+                Fokus pada pengalaman pengguna yang seamless dan performa tinggi.
+            </p>
+
+            <a href="#" id="pd-github" target="_blank" rel="noopener noreferrer" class="pd-github-btn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/>
+                </svg>
+                GitHub Repository
+            </a>
+
+            <!-- Technologies -->
+            <div class="pd-section">
+                <div class="pd-section-label">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+                    Technologies Used
+                </div>
+                <div class="pd-tech-tags" id="pd-tech-tags">
+                    <!-- Diisi oleh JS -->
+                </div>
+            </div>
+
+            <!-- Key Features -->
+            <div class="pd-section">
+                <div class="pd-section-label">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                    Key Features
+                </div>
+                <ul class="pd-features-list" id="pd-features-list">
+                    <!-- Diisi oleh JS -->
+                </ul>
+            </div>
+
+        </div><!-- /pd-left -->
+
+        <!-- RIGHT -->
+        <div class="pd-right">
+
+            <!-- Image Slider -->
+            <div class="pd-slider-wrap" id="pd-slider">
+                <!-- Slides diisi oleh JS -->
+                <span class="pd-img-counter" id="pd-counter">1 / 1</span>
+
+                <button class="pd-slider-btn pd-slider-prev" onclick="sliderNav(-1)" aria-label="Previous">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+                </button>
+                <button class="pd-slider-btn pd-slider-next" onclick="sliderNav(1)" aria-label="Next">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                </button>
+
+                <div class="pd-slider-dots" id="pd-dots"></div>
+            </div>
+
+            <!-- Stats Bar -->
+            <div class="pd-stats-bar" id="pd-stats-bar">
+                <!-- Diisi JS -->
+            </div>
+
+            <!-- Live Demo -->
+            <a href="#" id="pd-live" target="_blank" rel="noopener noreferrer" class="pd-live-btn">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 8 16 12 12 16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+                Live Demo
+            </a>
+
+        </div><!-- /pd-right -->
+
+    </main>
+
+    <script>
+    // ================================================================
+    // DATA PROJEK
+    // Tambah/edit data di sini. "images" adalah array URL foto.
+    // ================================================================
+    const projects = {
+        'e-commerce': {
+            title:       'E-Commerce Platform',
+            desc:        'Platform e-commerce modern yang dibangun dengan teknologi terkini. Menampilkan sistem manajemen produk, keranjang belanja dinamis, integrasi payment gateway, dan dashboard admin yang komprehensif. Fokus pada pengalaman pengguna yang seamless dan performa tinggi.',
+            github:      'https://github.com',
+            live:        'https://example.com',
+            images: [
+                'https://images.unsplash.com/photo-1547658719-da2b51169166?auto=format&fit=crop&q=80&w=1200',
+                'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&q=80&w=1200',
+                'https://images.unsplash.com/photo-1563013544-824ae1b704d3?auto=format&fit=crop&q=80&w=1200',
+            ],
+            tech:     ['Next.js', 'TypeScript', 'Tailwind CSS', 'Supabase', 'Stripe'],
+            features: [
+                'Sistem autentikasi dan manajemen pengguna',
+                'Katalog produk dengan filter dan pencarian real-time',
+                'Keranjang belanja & checkout dinamis',
+                'Integrasi payment gateway (Stripe)',
+                'Dashboard admin untuk manajemen order',
+                'Responsif di semua perangkat',
+            ],
+            stats: [
+                { val: '5+',  lbl: 'Teknologi' },
+                { val: '6',   lbl: 'Fitur Utama' },
+                { val: '2024', lbl: 'Tahun' },
+            ],
+        },
+        'dashboard': {
+            title:   'Analytics Dashboard',
+            desc:    'Dashboard analitik interaktif untuk visualisasi data bisnis secara real-time. Dilengkapi dengan berbagai tipe chart, filter dinamis, dan laporan yang dapat diekspor.',
+            github:  'https://github.com',
+            live:    'https://example.com',
+            images: [
+                'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=1200',
+                'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=1200',
+            ],
+            tech:     ['React', 'Chart.js', 'Node.js', 'PostgreSQL'],
+            features: [
+                'Visualisasi data real-time dengan berbagai tipe chart',
+                'Filter dan drill-down data interaktif',
+                'Ekspor laporan ke PDF & Excel',
+                'Dark/light mode toggle',
+                'Notifikasi & alert threshold otomatis',
+            ],
+            stats: [
+                { val: '4+',  lbl: 'Teknologi' },
+                { val: '5',   lbl: 'Fitur Utama' },
+                { val: '2024', lbl: 'Tahun' },
+            ],
+        },
+        'mobile-app': {
+            title:   'Mobile App',
+            desc:    'Aplikasi mobile cross-platform untuk produktivitas harian. Fitur task management, pengingat, dan sinkronisasi cloud yang mulus antar perangkat.',
+            github:  'https://github.com',
+            live:    'https://example.com',
+            images: [
+                'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&q=80&w=1200',
+                'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?auto=format&fit=crop&q=80&w=1200',
+            ],
+            tech:     ['React Native', 'Expo', 'Firebase', 'Redux'],
+            features: [
+                'Task management dengan prioritas & deadline',
+                'Push notification & pengingat cerdas',
+                'Sinkronisasi cloud real-time',
+                'Mode offline dengan queue sinkronisasi',
+                'UI animasi halus dengan Reanimated',
+            ],
+            stats: [
+                { val: '4+',  lbl: 'Teknologi' },
+                { val: '5',   lbl: 'Fitur Utama' },
+                { val: '2025', lbl: 'Tahun' },
+            ],
+        },
+        'portfolio': {
+            title:   'Portfolio Website',
+            desc:    'Website portfolio pribadi dengan animasi scroll yang kaya menggunakan GSAP. Menampilkan section hero interaktif, galeri proyek dengan tab filter, dan form kontak.',
+            github:  'https://github.com',
+            live:    'https://example.com',
+            images: [
+                'https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&q=80&w=1200',
+                'https://images.unsplash.com/photo-1467232004584-a241de8bcf5d?auto=format&fit=crop&q=80&w=1200',
+            ],
+            tech:     ['HTML', 'CSS', 'JavaScript', 'GSAP', 'ScrollTrigger'],
+            features: [
+                'Animasi scroll-driven dengan GSAP & ScrollTrigger',
+                'Tab portfolio dengan transisi kartu',
+                'Hero section dengan SVG path animation',
+                'Navigasi aktif berbasis scroll',
+                'Form komentar dengan localStorage',
+            ],
+            stats: [
+                { val: '5+',  lbl: 'Teknologi' },
+                { val: '5',   lbl: 'Fitur Utama' },
+                { val: '2025', lbl: 'Tahun' },
+            ],
+        },
+
+        // ── Design ───────────────────────────────────────────
+        'branding': {
+            title:   'Branding Design',
+            desc:    'Proyek branding komprehensif meliputi pembuatan identitas visual, sistem warna, tipografi, dan panduan brand untuk sebuah perusahaan startup.',
+            github:  'https://github.com',
+            live:    'https://example.com',
+            images: [
+                'https://images.unsplash.com/photo-1561070791-2526d30994b5?auto=format&fit=crop&q=80&w=1200',
+                'https://images.unsplash.com/photo-1558655146-d09347e92766?auto=format&fit=crop&q=80&w=1200',
+            ],
+            tech:     ['Figma', 'Adobe Illustrator', 'Adobe Photoshop'],
+            features: [
+                'Desain logo dan variasi penggunaan',
+                'Panduan warna & tipografi brand',
+                'Template materi pemasaran',
+                'Mockup presentasi klien',
+            ],
+            stats: [
+                { val: '3+',  lbl: 'Tools' },
+                { val: '4',   lbl: 'Deliverables' },
+                { val: '2024', lbl: 'Tahun' },
+            ],
+        },
+        'ui-ux': {
+            title:   'UI/UX Design',
+            desc:    'Desain UI/UX untuk aplikasi fintech mobile. Proses meliputi riset pengguna, wireframing, prototype interaktif, dan pengujian usability.',
+            github:  'https://github.com',
+            live:    'https://example.com',
+            images: [
+                'https://images.unsplash.com/photo-1581291518857-4e27b48ff24e?auto=format&fit=crop&q=80&w=1200',
+                'https://images.unsplash.com/photo-1586717791821-3f44a563fa4c?auto=format&fit=crop&q=80&w=1200',
+            ],
+            tech:     ['Figma', 'FigJam', 'Maze', 'Notion'],
+            features: [
+                'User research & persona development',
+                'Wireframe low-fidelity & high-fidelity',
+                'Prototype interaktif Figma',
+                'Usability testing & iterasi',
+                'Design system komponen',
+            ],
+            stats: [
+                { val: '4+',  lbl: 'Tools' },
+                { val: '5',   lbl: 'Fitur Utama' },
+                { val: '2025', lbl: 'Tahun' },
+            ],
+        },
+        'typography': {
+            title:   'Typography Project',
+            desc:    'Eksplorasi tipografi eksperimental untuk editorial digital. Menggabungkan variable fonts, kinetic typography, dan layout grid yang tidak konvensional.',
+            github:  'https://github.com',
+            live:    'https://example.com',
+            images: [
+                'https://images.unsplash.com/photo-1626785774573-4b799315345d?auto=format&fit=crop&q=80&w=1200',
+                'https://images.unsplash.com/photo-1561522840-27c9b16d9db2?auto=format&fit=crop&q=80&w=1200',
+            ],
+            tech:     ['CSS Variable Fonts', 'GSAP', 'HTML5 Canvas'],
+            features: [
+                'Variable font animation responsif',
+                'Kinetic typography interaktif',
+                'Grid layout editorial eksperimental',
+                'Responsif di semua ukuran layar',
+            ],
+            stats: [
+                { val: '3+',  lbl: 'Teknologi' },
+                { val: '4',   lbl: 'Fitur Utama' },
+                { val: '2025', lbl: 'Tahun' },
+            ],
+        },
+
+        // ── Certificate ───────────────────────────────────────
+        'frontend': {
+            title:   'Frontend Development Certificate',
+            desc:    'Sertifikasi Frontend Development yang mencakup HTML, CSS, JavaScript modern, framework React, dan optimasi performa web. Diperoleh melalui kursus intensif 6 bulan.',
+            github:  'https://github.com',
+            live:    'https://example.com',
+            images: [
+                'https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&q=80&w=1200',
+                'https://images.unsplash.com/photo-1516321165247-4aa89a48be55?auto=format&fit=crop&q=80&w=1200',
+            ],
+            tech:     ['HTML5', 'CSS3', 'JavaScript ES6+', 'React', 'Webpack'],
+            features: [
+                'Penguasaan HTML5 semantik & aksesibilitas',
+                'CSS modern: Grid, Flexbox, Custom Properties',
+                'JavaScript ES6+ dan async programming',
+                'React hooks dan state management',
+                'Optimasi performa dan Core Web Vitals',
+            ],
+            stats: [
+                { val: '5+',  lbl: 'Topik' },
+                { val: '6mo', lbl: 'Durasi' },
+                { val: '2024', lbl: 'Tahun' },
+            ],
+        },
+        'backend': {
+            title:   'Backend Development Certificate',
+            desc:    'Sertifikasi Backend Development yang mencakup Node.js, REST API, database relasional & non-relasional, autentikasi JWT, dan deployment ke cloud.',
+            github:  'https://github.com',
+            live:    'https://example.com',
+            images: [
+                'https://images.unsplash.com/photo-1516321497487-e288fb19713f?auto=format&fit=crop&q=80&w=1200',
+                'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&q=80&w=1200',
+            ],
+            tech:     ['Node.js', 'Express', 'PostgreSQL', 'MongoDB', 'JWT', 'Docker'],
+            features: [
+                'Pembuatan RESTful API yang terstruktur',
+                'Autentikasi & otorisasi dengan JWT',
+                'Database management SQL & NoSQL',
+                'Middleware & error handling pattern',
+                'Deployment menggunakan Docker & cloud',
+            ],
+            stats: [
+                { val: '6+',  lbl: 'Topik' },
+                { val: '6mo', lbl: 'Durasi' },
+                { val: '2024', lbl: 'Tahun' },
+            ],
+        },
+        'fullstack': {
+            title:   'Fullstack Development Certificate',
+            desc:    'Sertifikasi Fullstack yang mencakup keseluruhan siklus pengembangan web, mulai dari UI/UX dasar, frontend modern, backend API, hingga DevOps dan deployment.',
+            github:  'https://github.com',
+            live:    'https://example.com',
+            images: [
+                'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&q=80&w=1200',
+                'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&q=80&w=1200',
+            ],
+            tech:     ['React', 'Node.js', 'PostgreSQL', 'Redis', 'Docker', 'CI/CD'],
+            features: [
+                'Pengembangan frontend dengan React & TypeScript',
+                'Backend API dengan Node.js & Express',
+                'Database design & optimasi query',
+                'Caching dengan Redis',
+                'CI/CD pipeline & deployment otomatis',
+                'Monitoring & logging aplikasi',
+            ],
+            stats: [
+                { val: '6+',  lbl: 'Teknologi' },
+                { val: '6',   lbl: 'Fitur Utama' },
+                { val: '2025', lbl: 'Tahun' },
+            ],
+        },
+    };
+
+    // ── Mapping dari judul kartu ke key data ──────────────────
+    const titleToKey = {
+        'E-COMMERCE':   'e-commerce',
+        'DASHBOARD':    'dashboard',
+        'MOBILE APP':   'mobile-app',
+        'PORTFOLIO':    'portfolio',
+        'BRANDING':     'branding',
+        'UI/UX':        'ui-ux',
+        'TYPOGRAPHY':   'typography',
+        'FRONTEND':     'frontend',
+        'BACKEND':      'backend',
+        'FULLSTACK':    'fullstack',
+    };
+
+    // ================================================================
+    // INIT
+    // ================================================================
+    let currentSlide = 0;
+    let totalSlides  = 0;
+
+    function getProjectKey() {
+        const params = new URLSearchParams(window.location.search);
+        const fromTitle = params.get('title');
+        const fromKey   = params.get('key');
+        if (fromKey && projects[fromKey]) return fromKey;
+        if (fromTitle && titleToKey[fromTitle]) return titleToKey[fromTitle];
+        return 'e-commerce'; // default
+    }
+
+    function initPage() {
+        const key  = getProjectKey();
+        const data = projects[key] || projects['e-commerce'];
+
+        // Breadcrumb & title
+        document.title = data.title + ' – AJWEB';
+        document.getElementById('breadcrumb-title').textContent = data.title;
+        document.getElementById('pd-title').textContent         = data.title;
+        document.getElementById('pd-desc').textContent          = data.desc;
+        document.getElementById('pd-github').href               = data.github;
+        document.getElementById('pd-live').href                 = data.live;
+
+        // Tech tags
+        const tagsEl = document.getElementById('pd-tech-tags');
+        tagsEl.innerHTML = data.tech.map(t => `<span class="pd-tag">${t}</span>`).join('');
+
+        // Features
+        const featEl = document.getElementById('pd-features-list');
+        featEl.innerHTML = data.features.map(f =>
+            `<li><span class="feat-bullet"></span><span>${f}</span></li>`
+        ).join('');
+
+        // Stats bar
+        const statsEl = document.getElementById('pd-stats-bar');
+        statsEl.innerHTML = data.stats.map(s =>
+            `<div class="pd-stat-item">
+                <span class="pd-stat-val">${s.val}</span>
+                <span class="pd-stat-lbl">${s.lbl}</span>
+            </div>`
+        ).join('');
+
+        // Slider
+        const sliderEl  = document.getElementById('pd-slider');
+        const dotsEl    = document.getElementById('pd-dots');
+        const counterEl = document.getElementById('pd-counter');
+        totalSlides = data.images.length;
+
+        // Remove existing slides (keep nav elements)
+        sliderEl.querySelectorAll('.pd-slide').forEach(el => el.remove());
+        dotsEl.innerHTML = '';
+
+        data.images.forEach((src, i) => {
+            const slide = document.createElement('div');
+            slide.className = 'pd-slide' + (i === 0 ? ' active' : '');
+            slide.innerHTML = `<img src="${src}" alt="${data.title} screenshot ${i+1}" loading="lazy">`;
+            // Insert before the counter span
+            sliderEl.insertBefore(slide, sliderEl.querySelector('.pd-img-counter'));
+
+            const dot = document.createElement('button');
+            dot.className = 'pd-dot' + (i === 0 ? ' active' : '');
+            dot.setAttribute('aria-label', `Go to slide ${i+1}`);
+            dot.addEventListener('click', () => goToSlide(i));
+            dotsEl.appendChild(dot);
+        });
+
+        currentSlide = 0;
+        updateCounter();
+    }
+
+    function goToSlide(idx) {
+        const slides = document.querySelectorAll('.pd-slide');
+        const dots   = document.querySelectorAll('.pd-dot');
+        slides[currentSlide].classList.remove('active');
+        dots[currentSlide].classList.remove('active');
+        currentSlide = (idx + totalSlides) % totalSlides;
+        slides[currentSlide].classList.add('active');
+        dots[currentSlide].classList.add('active');
+        updateCounter();
+    }
+
+    function sliderNav(dir) { goToSlide(currentSlide + dir); }
+
+    function updateCounter() {
+        document.getElementById('pd-counter').textContent =
+            `${currentSlide + 1} / ${totalSlides}`;
+    }
+
+    function goBack() {
+        if (document.referrer && document.referrer !== '') {
+            history.back();
+        } else {
+            window.location.href = 'index.html#projects';
+        }
+    }
+
+    // Keyboard navigation
+    document.addEventListener('keydown', e => {
+        if (e.key === 'ArrowLeft')  sliderNav(-1);
+        if (e.key === 'ArrowRight') sliderNav(1);
+    });
+
+    // Run
+    initPage();
+    </script>
+</body>
+</html>
