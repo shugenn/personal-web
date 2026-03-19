@@ -91,14 +91,11 @@ window.addEventListener('resize', () => {
 // HERO SECTION ANIMATIONS WITH GSAP
 // ============================================
 
-// Tunggu sampai DOM dan GSAP siap
 document.addEventListener('DOMContentLoaded', function() {
     const initialLink = document.querySelector('.nav-links a.active') || navLinks[0];
     setActiveNavLink(initialLink);
     updateActiveNavByScroll();
 
-    
-    // Animasi foto masuk
     gsap.from('.hero-image', {
         duration: 1,
         opacity: 0,
@@ -106,7 +103,6 @@ document.addEventListener('DOMContentLoaded', function() {
         ease: 'power2.out'
     });
 
-    // Animasi teks hero dari kiri
     gsap.from('.hero-greeting', {
         duration: 0.8,
         x: -50,
@@ -147,7 +143,6 @@ document.addEventListener('DOMContentLoaded', function() {
         delay: 1.1
     });
 
-    // Background letter subtle animation
     gsap.from('.hero-bg-letter', {
         duration: 1.5,
         opacity: 0,
@@ -156,7 +151,6 @@ document.addEventListener('DOMContentLoaded', function() {
         delay: 0.2
     });
     
-    // Fungsi untuk animasi lengkap (garis + kata)
     function animateWordWithLine(lineClass, dotClass, wordClass, delay = 0) {
         const line = document.querySelector(lineClass);
         const dot = document.querySelector(dotClass);
@@ -166,54 +160,34 @@ document.addEventListener('DOMContentLoaded', function() {
         
         const lineLength = line.getTotalLength();
         
-        // Set initial state untuk line
         line.style.strokeDasharray = lineLength;
         line.style.strokeDashoffset = lineLength;
         
-        // Timeline untuk satu animate in saja
-        const tl = gsap.timeline({
-            delay: delay
-        });
+        const tl = gsap.timeline({ delay: delay });
         
-        // 1. Tampilkan garis dan jalankan animasi wipe dari gambar ke kata
-        // Menggunakan set opacity agar titik "stroke-linecap" tidak muncul di awal saat delay
         tl.set(line, { opacity: 1 })
         .to(line, {
             strokeDashoffset: 0,
             duration: 1,
             ease: 'power2.inOut'
         })
-        
-        // 2. Dot muncul
         .to(dot, {
             opacity: 1,
             duration: 0.2
         }, '-=0.2')
-        
-        // 3. Kata muncul dengan baseline (dari arah panah)
         .fromTo(word, 
-            {
-                opacity: 0,
-                y: -15
-            },
-            {
-                opacity: 1,
-                y: 0,
-                duration: 0.8,
-                ease: 'back.out(1.7)'
-            },
+            { opacity: 0, y: -15 },
+            { opacity: 1, y: 0, duration: 0.8, ease: 'back.out(1.7)' },
             '-=0.1'
         );
         
         return tl;
     }
     
-    // Jalankan animasi untuk setiap kata dengan stagger delay
     animateWordWithLine('.line-dreamer', '.dot-dreamer', '.word-dreamer', 1.5);
     animateWordWithLine('.line-yearner', '.dot-yearner', '.word-yearner', 1.8);
     animateWordWithLine('.line-rizzler', '.dot-rizzler', '.word-rizzler', 2.1);
     
-    // About section stats animation
     gsap.from('.about .hero-stats', {
         scrollTrigger: {
             trigger: '.about',
@@ -225,7 +199,6 @@ document.addEventListener('DOMContentLoaded', function() {
         ease: 'power2.out',
         delay: 0.4
     });
-
 });
 
 // ============================================
@@ -235,168 +208,383 @@ document.addEventListener('DOMContentLoaded', function() {
 document.addEventListener('DOMContentLoaded', () => {
     const tabs = document.querySelectorAll('.portfolio-tab');
     const groups = document.querySelectorAll('.portfolio-slider-group');
+    const portfolioSection = document.getElementById('projects');
 
-    // 1. Tab Switching Logic
+    if (!portfolioSection) return;
+
+    // ─── STATE ───────────────────────────────────────────────
+    let scrollTl        = null;
+    let pinTrigger      = null;
+    let entranceTrigger = null;
+    let isAnimating     = false;
+
+    // ─── HELPERS ─────────────────────────────────────────────
+
+    function ensureWrappersAndOverlays(cards) {
+        cards.forEach((card) => {
+            let wrapper = card.parentElement;
+            if (!wrapper.classList.contains('card-wrapper')) {
+                wrapper = document.createElement('div');
+                wrapper.className = 'card-wrapper';
+                card.parentNode.insertBefore(wrapper, card);
+                wrapper.appendChild(card);
+            }
+
+            if (!card.querySelector('.card-overlay')) {
+                const overlay = document.createElement('div');
+                overlay.className = 'card-overlay';
+                overlay.innerHTML = `
+                    <div class="card-progress"><div class="card-progress-bar"></div></div>
+                    <button class="card-nav card-nav-prev">&#8592;</button>
+                    <button class="card-nav card-nav-next">&#8594;</button>
+                    <div class="card-bottom-actions">
+                        <button class="card-heart">&#9829;</button>
+                        <button class="card-info-btn">i</button>
+                    </div>`;
+                card.appendChild(overlay);
+            }
+
+            card._overlayVisible = false;
+        });
+    }
+
+    function killAll() {
+        if (scrollTl)        { scrollTl.kill();  scrollTl = null; }
+        if (entranceTrigger) { entranceTrigger.kill(true);  entranceTrigger = null; }
+
+        if (pinTrigger) {
+            pinTrigger.kill(true);
+            pinTrigger = null;
+
+            // GSAP pin meng-inject inline style: position, top, width, dll
+            // ke portfolioSection dan wrapper pin-spacer yang ia buat.
+            // Harus di-reset manual agar section tidak tetap menempel/overlap.
+            portfolioSection.style.position   = '';
+            portfolioSection.style.top        = '';
+            portfolioSection.style.left       = '';
+            portfolioSection.style.width      = '';
+            portfolioSection.style.zIndex     = '';
+            portfolioSection.style.transform  = '';
+            portfolioSection.style.willChange = '';
+
+            // Hapus pin-spacer yang dibuat GSAP (div pembungkus sementara)
+            const pinSpacer = portfolioSection.parentElement;
+            if (pinSpacer && pinSpacer.classList.contains('pin-spacer')) {
+                // Pindahkan section kembali ke parent aslinya sebelum spacer dihapus
+                pinSpacer.parentElement.insertBefore(portfolioSection, pinSpacer);
+                pinSpacer.parentElement.removeChild(pinSpacer);
+            }
+        }
+
+        // Refresh semua ScrollTrigger yang tersisa agar posisi dihitung ulang
+        ScrollTrigger.refresh();
+    }
+
+    // ─── RESET LAYOUT BERSIH ─────────────────────────────────
+    // Hanya bersihkan properti transform/opacity dari GSAP,
+    // JANGAN clearProps:'all' karena merusak display/height dari CSS
+    function cleanGsapProps(elements) {
+        if (!elements || !elements.length) return;
+        gsap.set(elements, { clearProps: 'x,y,opacity,transform,transition' });
+    }
+
+    // ─── SETUP UTAMA ─────────────────────────────────────────
+    function setupPortfolioAnimations() {
+        killAll();
+
+        // Bersihkan hanya transform dari section — bukan semua props
+        gsap.set(portfolioSection, { clearProps: 'transform,opacity' });
+
+        const activeGroup = portfolioSection.querySelector('.portfolio-slider-group.active');
+        if (!activeGroup) return;
+
+        const cards = activeGroup.querySelectorAll('.portfolio-card');
+        if (!cards.length) return;
+
+        ensureWrappersAndOverlays(cards);
+
+        // Pastikan group aktif visible dengan display flex
+        activeGroup.style.display = 'flex';
+
+        // Bersihkan transform lama dari card & wrapper
+        const wrappers = activeGroup.querySelectorAll('.card-wrapper');
+        cleanGsapProps(wrappers);
+        cleanGsapProps(cards);
+
+        // Force reflow agar offsetLeft akurat
+        void activeGroup.offsetWidth;
+        void activeGroup.offsetHeight;
+
+        // ── Hitung jarak tempuh ──────────────────────────────
+        let maxTravel = 0;
+        if (wrappers.length > 1) {
+            maxTravel = wrappers[wrappers.length - 1].offsetLeft;
+        }
+        if (!maxTravel || maxTravel <= 0) {
+            // Fallback: card 320px + gap 2rem(32px) = 352px
+            maxTravel = (wrappers.length - 1) * 352;
+        }
+
+        // Jika hanya 1 card atau maxTravel = 0, skip scroll animation
+        if (maxTravel <= 0) {
+            // Hanya setup entrance tanpa scroll stacking
+            entranceTrigger = ScrollTrigger.create({
+                trigger: portfolioSection,
+                start: 'top 80%',
+                onEnter: () => {
+                    gsap.fromTo(cards,
+                        { x: '100vw', opacity: 0 },
+                        { x: 0, opacity: 1, duration: 0.8, stagger: 0.12, ease: 'power3.out' }
+                    );
+                },
+                onLeaveBack: () => {
+                    gsap.set(cards, { x: '100vw', opacity: 0 });
+                }
+            });
+            ScrollTrigger.refresh();
+            return;
+        }
+
+        // ── 1. Scroll-driven stacking timeline ───────────────
+        scrollTl = gsap.timeline();
+
+        wrappers.forEach((wrapper) => {
+            const dist = wrapper.offsetLeft;
+            if (dist > 0) {
+                scrollTl.fromTo(wrapper,
+                    { x: 0 },
+                    { x: -dist, ease: 'none', duration: dist / maxTravel },
+                    0
+                );
+            }
+        });
+
+        const threshold = window.innerWidth * 0.68;
+
+        pinTrigger = ScrollTrigger.create({
+            animation: scrollTl,
+            trigger: portfolioSection,
+            start: 'top top',
+            end: () => `+=${maxTravel * 1.5}`,
+            pin: true,
+            scrub: 1,
+            invalidateOnRefresh: true,
+            onUpdate: () => {
+                cards.forEach(card => {
+                    const rect = card.getBoundingClientRect();
+                    const centerThreshold = window.innerWidth * 0.52;
+
+                    if (rect.left <= threshold && rect.left > centerThreshold) {
+                        if (!card._overlayVisible) {
+                            card._overlayVisible = true;
+                            const statics = card.querySelectorAll('.card-progress, .card-nav');
+                            const actions  = card.querySelectorAll('.card-heart, .card-info-btn');
+                            const infoBox  = card.querySelector('.portfolio-card-info');
+
+                            gsap.to(statics, { opacity: 1, duration: 0.3, overwrite: 'auto' });
+                            gsap.fromTo(actions,
+                                { y: 15, opacity: 0 },
+                                { y: 0, opacity: 1, duration: 0.3, stagger: 0.05, overwrite: 'auto' }
+                            );
+                            if (infoBox) {
+                                gsap.to(infoBox, {
+                                    top: '50px',
+                                    transform: 'translate(-50%, 0)',
+                                    duration: 0.4, ease: 'power2.out', overwrite: 'auto'
+                                });
+                            }
+                        }
+                    } else {
+                        if (card._overlayVisible) {
+                            card._overlayVisible = false;
+                            const allOvs = card.querySelectorAll('.card-progress, .card-nav, .card-heart, .card-info-btn');
+                            const infoBox = card.querySelector('.portfolio-card-info');
+
+                            gsap.to(allOvs, { opacity: 0, duration: 0.2, overwrite: 'auto' });
+                            if (infoBox) {
+                                gsap.to(infoBox, {
+                                    top: '50%',
+                                    transform: 'translate(-50%, -50%)',
+                                    duration: 0.4, ease: 'power2.out', overwrite: 'auto'
+                                });
+                            }
+                        }
+                    }
+                });
+            }
+        });
+
+        // ── 2. Entrance animation ────────────────────────────
+        const playEntrance = () => {
+            gsap.fromTo(cards,
+                { x: '100vw', opacity: 0 },
+                {
+                    x: 0, opacity: 1,
+                    duration: 0.8, stagger: 0.12,
+                    ease: 'power3.out', overwrite: 'auto',
+                    onStart:    () => cards.forEach(c => c.style.transition = 'none'),
+                    onComplete: () => cards.forEach(c => c.style.transition = '')
+                }
+            );
+        };
+
+        const resetEntrance = () => {
+            gsap.set(cards, { x: '100vw', opacity: 0 });
+        };
+
+        entranceTrigger = ScrollTrigger.create({
+            trigger: portfolioSection,
+            start: 'top 80%',
+            end: () => `+=${portfolioSection.offsetHeight + maxTravel * 2.5}`,
+            onEnter:      playEntrance,
+            onEnterBack:  playEntrance,
+            onLeaveBack:  resetEntrance
+        });
+
+        ScrollTrigger.refresh();
+    }
+
+    // ─── INISIASI AWAL ───────────────────────────────────────
+    gsap.set(portfolioSection.querySelectorAll('.portfolio-card'), { x: '100vw', opacity: 0 });
+
+    setTimeout(() => {
+        setupPortfolioAnimations();
+    }, 100);
+
+    // ─── TAB SWITCHING ───────────────────────────────────────
     tabs.forEach(tab => {
-        tab.addEventListener('click', function() {
-            if (this.classList.contains('active')) return;
+        tab.addEventListener('click', function () {
+            if (this.classList.contains('active') || isAnimating) return;
 
-            // Remove active from all tabs
-            tabs.forEach(t => t.classList.remove('active'));
-            this.classList.add('active');
+            const targetId    = this.dataset.target;
+            const activeGroup = portfolioSection.querySelector('.portfolio-slider-group.active');
+            const currentCards = activeGroup ? activeGroup.querySelectorAll('.portfolio-card') : [];
 
-            // Find target group
-            const targetId = this.getAttribute('data-target');
-            
-            // Hide all groups
-            groups.forEach(g => g.classList.remove('active'));
-            
-            // Show target
-            const nextGroup = document.getElementById(targetId);
-            if (nextGroup) {
-                nextGroup.classList.add('active');
+            // Tutup semua overlay yang terbuka
+            currentCards.forEach(c => {
+                if (c._overlayVisible) {
+                    const allOvs = c.querySelectorAll('.card-progress, .card-nav, .card-heart, .card-info-btn');
+                    const infoBox = c.querySelector('.portfolio-card-info');
+                    gsap.to(allOvs, { opacity: 0, duration: 0.1 });
+                    if (infoBox) gsap.set(infoBox, { top: '50%', transform: 'translate(-50%, -50%)' });
+                    c._overlayVisible = false;
+                }
+            });
+
+            const clickedTab = this;
+
+            const performSwitch = () => {
+                isAnimating = true;
+
+                // 1. Simpan posisi scroll awal ScrollTrigger sebelum dihancurkan
+                const targetScroll = pinTrigger ? pinTrigger.start : portfolioSection.offsetTop;
+
+                // 1b. Scroll ke posisi awal SEBELUM killAll agar pin-spacer
+                //     tidak menyebabkan lompatan layout saat spacer dihapus
+                if (targetScroll !== undefined && targetScroll > 0) {
+                    window.scrollTo({ top: targetScroll, behavior: 'instant' });
+                }
+
+                // 2. Hancurkan semua trigger & timeline aktif
+                killAll();
+
+                // 3. Bersihkan HANYA transform/opacity GSAP dari section
+                //    JANGAN clearProps:'all' — merusak display, height, dll dari CSS
+                gsap.set(portfolioSection, { clearProps: 'transform,opacity,x,y' });
+
+                // Bersihkan props dari group & card yang lama
+                if (activeGroup) {
+                    const oldWrappers = activeGroup.querySelectorAll('.card-wrapper');
+                    cleanGsapProps(oldWrappers);
+                    const oldCards = activeGroup.querySelectorAll('.portfolio-card');
+                    cleanGsapProps(oldCards);
+
+                    // Sembunyikan group lama secara eksplisit
+                    activeGroup.classList.remove('active');
+                    activeGroup.style.display = 'none';
+                }
+
+                // 4. Update tab active
+                tabs.forEach(t => t.classList.remove('active'));
+                clickedTab.classList.add('active');
+
+                // 5. Tampilkan group baru
+                const nextGroup = document.getElementById(targetId);
+                if (nextGroup) {
+                    // Pastikan group lain tersembunyi
+                    groups.forEach(g => {
+                        if (g !== nextGroup) {
+                            g.classList.remove('active');
+                            g.style.display = 'none';
+                        }
+                    });
+
+                    nextGroup.classList.add('active');
+                    nextGroup.style.display = 'flex'; // Paksa display flex langsung
+
+                    // Set kartu baru di luar layar sebelum entrance
+                    const nextCards = nextGroup.querySelectorAll('.portfolio-card');
+                    gsap.set(nextCards, { x: '100vw', opacity: 0 });
+
+                    // Force reflow agar layout terukur dengan benar
+                    void nextGroup.offsetWidth;
+                    void nextGroup.offsetHeight;
+                }
+
+                // 6. Build ulang animasi setelah DOM stabil
+                //    Gunakan requestAnimationFrame + setTimeout untuk pastikan layout sudah siap
+                requestAnimationFrame(() => {
+                    setTimeout(() => {
+                        setupPortfolioAnimations();
+
+                        // 7. Jalankan entrance animation untuk kartu baru
+                        const newGroup = portfolioSection.querySelector('.portfolio-slider-group.active');
+                        if (newGroup) {
+                            const newCards = newGroup.querySelectorAll('.portfolio-card');
+                            gsap.fromTo(newCards,
+                                { x: '100vw', opacity: 0 },
+                                {
+                                    x: 0, opacity: 1,
+                                    duration: 0.8, stagger: 0.12,
+                                    ease: 'power3.out', overwrite: 'auto',
+                                    onStart: () => newCards.forEach(c => c.style.transition = 'none'),
+                                    onComplete: () => {
+                                        newCards.forEach(c => c.style.transition = '');
+                                        isAnimating = false;
+                                    }
+                                }
+                            );
+                        } else {
+                            isAnimating = false;
+                        }
+                    }, 50); // Delay kecil agar reflow selesai
+                });
+            };
+
+            // Animasi exit kartu lama, lalu switch
+            if (currentCards.length > 0) {
+                isAnimating = true;
+                gsap.to(currentCards, {
+                    x: '100vw',
+                    opacity: 0,
+                    duration: 0.5,
+                    stagger: 0.06,
+                    ease: 'power3.in',
+                    onComplete: () => {
+                        isAnimating = false;
+                        performSwitch();
+                    }
+                });
+            } else {
+                performSwitch();
             }
         });
     });
-
-    const portfolioSection = document.getElementById('projects');
-    
-    if (portfolioSection) {
-        let scrollTl;
-        let pinTrigger;
-        let entranceTrigger;
-
-        const setupPortfolioAnimations = () => {
-            // Bersihkan instansiasi GSAP lama jika ada
-            if (scrollTl) scrollTl.kill();
-            if (pinTrigger) pinTrigger.kill();
-            if (entranceTrigger) entranceTrigger.kill();
-
-            const activeGroup = document.querySelector('.portfolio-slider-group.active');
-            if (!activeGroup) return;
-
-            const cards = activeGroup.querySelectorAll('.portfolio-card');
-            if (cards.length === 0) return;
-
-            // Pastikan inline style dari interaksi sebelumnya bersih
-            gsap.set(cards, { clearProps: 'all' });
-
-            // BUNGKUS SETIAP CARD KE DALAM WRAPPER.
-            // Ini PENTING untuk memisahkan properti pergeseran:
-            // - Wrapper dianimasikan oleh scroll scrub (menumpuk posisi di jalur scroll)
-            // - Card di dalamnya dianimasikan oleh entrance trigger (masuk dari 100vw ke x 0)
-            // Dengan gini, 2 animasi "x" di GSAP tidak akan bentrok / overwrite satu sama lain yang menyebabkan card hilang.
-            cards.forEach((card, index) => {
-                let wrapper = card.parentElement;
-                if (!wrapper.classList.contains('card-wrapper')) {
-                    wrapper = document.createElement('div');
-                    wrapper.className = 'card-wrapper';
-                    // Tiru dimensi ruang card flex
-                    wrapper.style.width = '320px';
-                    wrapper.style.height = '490px';
-                    wrapper.style.flexShrink = '0';
-                    wrapper.style.position = 'relative';
-                    
-                    card.parentNode.insertBefore(wrapper, card);
-                    wrapper.appendChild(card);
-                }
-                // Susun z-index di wrapper. Yang lebih jauh(kanan) punya z-index menimpa pos kiri
-                wrapper.style.zIndex = index + 1;
-            });
-
-            const wrappers = activeGroup.querySelectorAll('.card-wrapper');
-            // Sedikit delay utk memastikan element dirender dan ada perhitungan width 
-            setTimeout(() => {
-                // Jarak paling jauh: offsetLeft dari tiket wrapper terakhir dalam track group
-                const maxTravel = wrappers[wrappers.length - 1].offsetLeft;
-
-                // --- 1. Mode Scroll-Driven Stacking ---
-                scrollTl = gsap.timeline();
-
-                wrappers.forEach((wrapper) => {
-                    let travelDistance = wrapper.offsetLeft;
-                    if (travelDistance > 0) {
-                        scrollTl.fromTo(wrapper, 
-                            { x: 0 },
-                            {
-                                x: -travelDistance, // Geser ke kiri menuju letak x:0 di parent track (tengah layar)
-                                ease: 'none',
-                                duration: travelDistance / maxTravel 
-                            },
-                            0
-                        );
-                    }
-                });
-
-                pinTrigger = ScrollTrigger.create({
-                    animation: scrollTl,
-                    trigger: portfolioSection,
-                    start: 'top top',
-                    end: () => '+=' + (maxTravel * 1.5), 
-                    pin: true,
-                    scrub: 1, 
-                    invalidateOnRefresh: true,
-                });
-
-                // --- 2. Mode Entrance Animation ---
-                // Saat memasuki viewport, Card akan slide stagger menuju 0 di dalam posisinya masing-masing 
-                const playEntrance = () => {
-                    gsap.fromTo(cards, 
-                        { x: '100vw', opacity: 0 }, 
-                        {
-                            x: 0,
-                            opacity: 1,
-                            duration: 0.8,
-                            stagger: 0.12,
-                            ease: 'power3.out',
-                            overwrite: 'auto',
-                            onStart: () => cards.forEach(c => c.style.transition = 'none'),
-                            onComplete: () => cards.forEach(c => c.style.transition = '') // Kembalikan transisi hover
-                        }
-                    );
-                };
-
-                const resetEntrance = () => {
-                    gsap.set(cards, { x: '100vw', opacity: 0 });
-                };
-
-                entranceTrigger = ScrollTrigger.create({
-                    trigger: portfolioSection,
-                    start: 'top 80%', 
-                    // Menambahkan padding dari pin agar animasi masuk tetap solid saat scroll kebawah terus
-                    end: () => '+=' + (portfolioSection.offsetHeight + (maxTravel * 2.5)), 
-                    onEnter: playEntrance,
-                    onEnterBack: playEntrance,
-                    // Hanya matikan/reser opacity kalau layar digulir KE ATAS menembus Header agar animasi bisa berulang
-                    onLeaveBack: resetEntrance
-                });
-
-                ScrollTrigger.refresh();
-            }, 50);
-        };
-
-        // Render perdana pembungkus container
-        setTimeout(setupPortfolioAnimations, 100);
-
-        // Update interaksi ketika tab navigasi diganti
-        tabs.forEach(tab => {
-            tab.addEventListener('click', () => {
-                if (window.scrollY > portfolioSection.offsetTop) {
-                    window.scrollTo({ top: portfolioSection.offsetTop, behavior: 'auto' });
-                }
-                setTimeout(() => {
-                    setupPortfolioAnimations();
-                }, 100);   
-            });
-        });
-        
-        // Inisiasi awal card bersembunyi (100vw) sebelum trigger entrance menyala ketika di-scroll
-        const allCards = document.querySelectorAll('.portfolio-card');
-        gsap.set(allCards, { x: '100vw', opacity: 0 });
-    }
 });
 
+// ============================================
 // Modal Logic
+// ============================================
 function openProjectModal(title, description, imageSrc, link) {
     document.getElementById('modalTitle').textContent = title;
     document.getElementById('modalDescription').textContent = description;
@@ -415,19 +603,16 @@ function closeProjectModal() {
 
 window.addEventListener('click', (e) => {
     const modal = document.getElementById('projectModal');
-    if (e.target === modal) {
-        closeProjectModal();
-    }
+    if (e.target === modal) closeProjectModal();
 });
 
 // ============================================
 // CONTACT SECTION FUNCTIONALITY
 // ============================================
-
-const copyEmailBtn = document.getElementById('copyEmailBtn');
-const copyStatus = document.getElementById('copyStatus');
-const commentForm = document.getElementById('commentForm');
-const commentList = document.getElementById('commentList');
+const copyEmailBtn    = document.getElementById('copyEmailBtn');
+const copyStatus      = document.getElementById('copyStatus');
+const commentForm     = document.getElementById('commentForm');
+const commentList     = document.getElementById('commentList');
 const commentStorageKey = 'portfolioComments';
 
 function escapeHtml(text) {
@@ -443,9 +628,7 @@ function getStoredComments() {
     try {
         const stored = localStorage.getItem(commentStorageKey);
         return stored ? JSON.parse(stored) : [];
-    } catch {
-        return [];
-    }
+    } catch { return []; }
 }
 
 function saveComments(comments) {
@@ -453,36 +636,25 @@ function saveComments(comments) {
 }
 
 function renderComments() {
-    if (!commentList) {
-        return;
-    }
-
+    if (!commentList) return;
     const comments = getStoredComments();
-
     if (comments.length === 0) {
         commentList.innerHTML = '<p>No comments yet.</p>';
         return;
     }
-
     commentList.innerHTML = comments
-        .map(comment => `
+        .map(c => `
             <div class="comment-item">
-                <p class="comment-name">${escapeHtml(comment.name)}</p>
-                <p class="comment-message">${escapeHtml(comment.message)}</p>
-            </div>
-        `)
+                <p class="comment-name">${escapeHtml(c.name)}</p>
+                <p class="comment-message">${escapeHtml(c.message)}</p>
+            </div>`)
         .join('');
 }
 
 if (copyEmailBtn && copyStatus) {
     copyEmailBtn.addEventListener('click', async () => {
         const email = copyEmailBtn.dataset.email || '';
-
-        if (!email) {
-            copyStatus.textContent = 'Email is not available.';
-            return;
-        }
-
+        if (!email) { copyStatus.textContent = 'Email is not available.'; return; }
         try {
             await navigator.clipboard.writeText(email);
             copyStatus.textContent = 'Email copied to clipboard.';
@@ -495,73 +667,34 @@ if (copyEmailBtn && copyStatus) {
 // ============================================
 // ABOUT STATS COMPONENT
 // ============================================
-
 function updateAboutStats() {
-    // 1. Update Total Projects
-    // Mengambil dari jumlah array projectData
     const totalProjects = typeof projectData !== 'undefined' ? projectData.length : 0;
     const statProjectsEl = document.getElementById('stat-projects');
-    if (statProjectsEl) {
-        // beri tanda + jika diinginkan. Sementara memakai data murni
-        statProjectsEl.textContent = totalProjects > 0 ? `${totalProjects}+` : totalProjects;
-    }
+    if (statProjectsEl) statProjectsEl.textContent = totalProjects > 0 ? `${totalProjects}+` : totalProjects;
 
-    // 2. Update Total Certificates
-    // Placeholder, nilai akan diganti setelah data sertifikat disiapkan
-    const totalCertificates = 0; 
     const statCertificatesEl = document.getElementById('stat-certificates');
-    if (statCertificatesEl) {
-        statCertificatesEl.textContent = totalCertificates;
-    }
+    if (statCertificatesEl) statCertificatesEl.textContent = 0;
 
-    // 3. Update Years of Experience
-    // Logika: Dihitung mulai bulan Juli 2024 (Bulan ke-6 dalam index js, karena Jan=0)
-    const startDate = new Date(2024, 6, 1);
+    const startDate   = new Date(2024, 6, 1);
     const currentDate = new Date();
-    
-    let yearsOfExp = currentDate.getFullYear() - startDate.getFullYear();
-    const monthDiff = currentDate.getMonth() - startDate.getMonth();
-    
-    // Jika belum melewati/sampai di bulan awal pada tahun berjalan, kurangi 1 tahun (opsional, tergantung presisi)
-    // Di sini asumsi setidaknya sudah 1+ jika lewat Juli 2024, kalau belum 1 tahun penuh tetap 0+
-    if (monthDiff < 0 || (monthDiff === 0 && currentDate.getDate() < startDate.getDate())) {
-        yearsOfExp--;
-    }
-
-    // Jika tahun berjalan telah lebih dari Juli 2024, jika belum genap setahun tapi mau diset 1+, modifikasi di bawah
-    // Namun instruksinya: jika telah melewati bulan tersebut (mengandung bulan lebih dll) + "tanda + tidak bulat"
-    // Contoh untuk current date > july 2024 maka bisa diisi manual 1+ jika belum setahun persis.
-    let displayYears = yearsOfExp;
-
-    if (currentDate >= startDate) {
-        if (yearsOfExp < 1 && (currentDate.getFullYear() > startDate.getFullYear() || currentDate.getMonth() > startDate.getMonth())) {
-            // Berlaku misalnya di 2025/2026 tapi hitungan matematiknya 0. Bisa dipaksa 1 jika maksudnya "memasuki tahun pertama"
-            displayYears = 1;
-        } else if (yearsOfExp < 1) {
-            displayYears = 1; // sesuai prompt "ketik saja 1+ karena mulai juli 2024"
-        }
-    }
+    let yearsOfExp    = currentDate.getFullYear() - startDate.getFullYear();
+    const monthDiff   = currentDate.getMonth() - startDate.getMonth();
+    if (monthDiff < 0 || (monthDiff === 0 && currentDate.getDate() < startDate.getDate())) yearsOfExp--;
+    let displayYears = currentDate >= startDate ? Math.max(yearsOfExp, 1) : 0;
 
     const statExpEl = document.getElementById('stat-experience');
-    if (statExpEl) {
-        statExpEl.textContent = displayYears + '+';
-    }
+    if (statExpEl) statExpEl.textContent = displayYears + '+';
 }
 
 document.addEventListener('DOMContentLoaded', updateAboutStats);
 
 if (commentForm) {
-    commentForm.addEventListener('submit', (event) => {
-        event.preventDefault();
-
+    commentForm.addEventListener('submit', (e) => {
+        e.preventDefault();
         const formData = new FormData(commentForm);
-        const name = (formData.get('name') || '').toString().trim();
+        const name    = (formData.get('name')    || '').toString().trim();
         const message = (formData.get('message') || '').toString().trim();
-
-        if (!name || !message) {
-            return;
-        }
-
+        if (!name || !message) return;
         const comments = getStoredComments();
         comments.unshift({ name, message });
         saveComments(comments);
@@ -572,9 +705,4 @@ if (commentForm) {
 
 renderComments();
 
-// Log ketika halaman selesai dimuat
-console.log('Website portfolio dengan wave effect berhasil dimuat!');
-
-
-
-
+console.log('Website portfolio berhasil dimuat!');

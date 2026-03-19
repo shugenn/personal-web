@@ -727,11 +727,13 @@ nav {
     padding: 6rem 0;
     background-color: #0A0A0A;
     color: #FFE5E5;
-    overflow: hidden; /* Hide anything outside */
+    overflow: hidden;
     position: relative;
-    height: 100vh; /* Agar bisa menampung tinggi layar penuh jika perlu */
+    min-height: 100vh;
+    height: 100vh;
     display: flex;
     align-items: center;
+    will-change: auto;
 }
 
 .portfolio-container {
@@ -809,6 +811,8 @@ nav {
     /* Mulai dari 50% layar */
     position: absolute;
     left: 50%;
+    top: 50%;
+    transform: translateY(-50%);
     width: max-content; /* Memanjang ke kanan mengikuti isinya */
     overflow: visible; /* Track tidak boleh scroll terpotong */
 }
@@ -868,9 +872,13 @@ nav {
 
 .portfolio-card-info {
     position: absolute;
-    bottom: 2rem;
-    left: 1.5rem;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    text-align: center;
     z-index: 3;
+    transition: top 0.4s ease, transform 0.4s ease, bottom 0.4s ease;
 }
 
 .portfolio-card-title {
@@ -883,6 +891,104 @@ nav {
 }
 
 
+
+
+/* Overlay Card Styling (Instagram Story style progress, navigasi, info) */
+.card-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 4;
+    pointer-events: none; /* Biarkan bisa hover cover */
+}
+
+/* Progress bar di atas */
+.card-progress {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    right: 15px;
+    height: 3px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 2px;
+    overflow: hidden;
+    opacity: 0; /* Hidden by default */
+}
+
+.card-progress-bar {
+    width: 0%;
+    height: 100%;
+    background: #FFF;
+    border-radius: 2px;
+}
+
+/* Tombol Navigasi Panah */
+.card-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: #FFF;
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    pointer-events: auto; /* Bisa diklik */
+    backdrop-filter: blur(4px);
+    transition: background 0.3s;
+    opacity: 0; /* Hidden by default */
+}
+
+.card-nav:hover {
+    background: rgba(255, 255, 255, 0.5);
+}
+
+.card-nav-prev {
+    left: 10px;
+}
+
+.card-nav-next {
+    right: 10px;
+}
+
+/* Tombol Info dan Love */
+.card-bottom-actions {
+    position: absolute;
+    bottom: 2rem;
+    right: 1.5rem;
+    display: flex;
+    gap: 10px;
+}
+
+.card-heart, .card-info-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255,255,255,0.4);
+    color: #FFF;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    pointer-events: auto;
+    backdrop-filter: blur(4px);
+    transition: background 0.3s, transform 0.2s;
+    opacity: 0; /* Hidden by default */
+}
+
+.card-heart:hover, .card-info-btn:hover {
+    background: rgba(255, 255, 255, 0.5);
+    transform: scale(1.1);
+}
 
 /* Modal Styling */
 .modal {
@@ -1213,3 +1319,10 @@ nav {
     }
 }
 
+
+.card-wrapper {
+    width: 320px;
+    height: 490px;
+    flex-shrink: 0;
+    position: relative;
+}
