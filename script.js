@@ -1,6 +1,3 @@
-// ============================================================
-// SMOOTH SCROLLING
-// ============================================================
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function (e) {
         e.preventDefault();
@@ -16,9 +13,6 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     });
 });
 
-// ============================================================
-// NAVBAR
-// ============================================================
 const navLinks      = document.querySelectorAll('.nav-links a[href^="#"]');
 const navIndicator  = document.querySelector('.nav-indicator');
 const navList       = document.querySelector('.nav-links');
@@ -67,20 +61,13 @@ window.addEventListener('resize', () => {
 });
 window.addEventListener('load', updateActiveNavByScroll);
 
-// ============================================================
-// GSAP
-// ============================================================
 gsap.registerPlugin(ScrollTrigger);
 
-// ============================================================
-// SNAP-TO-SECTION HELPER
-// Ketika user hampir meninggalkan sebuah section (threshold),
-// halaman otomatis scroll ke awal section berikutnya / sebelumnya.
-// ============================================================
 function setupSectionSnap() {
     const snapSections = [
         document.querySelector('#home'),
         document.querySelector('#about'),
+        document.querySelector('#blog'), 
         document.querySelector('#contact'),
     ].filter(Boolean);
 
@@ -95,22 +82,15 @@ function setupSectionSnap() {
         const scrollingDown  = currentScrollY > lastScrollY;
         lastScrollY = currentScrollY;
 
-        // Hanya snap saat scroll ke BAWAH
         if (!scrollingDown) return;
 
         clearTimeout(scrollTimeout);
         scrollTimeout = setTimeout(() => {
-            // Cari section BERIKUTNYA yang hampir masuk viewport dari bawah
-            // Threshold tinggi (0.55) = harus sudah lebih dari separuh terlihat
-            // sebelum snap dipicu — ini mencegah snap saat masih scrolling di dalam section
             for (const sec of snapSections) {
                 const rect    = sec.getBoundingClientRect();
                 const visible = Math.min(rect.bottom, window.innerHeight) - Math.max(rect.top, 0);
                 const ratio   = visible / window.innerHeight;
 
-                // Snap hanya jika:
-                // - section terlihat antara 55%-95% (sudah masuk tapi belum penuh)
-                // - bagian atas section masih di bawah header (belum di-snap)
                 const header = document.querySelector('header');
                 const headerH = header ? header.offsetHeight : 70;
                 const topBelowHeader = rect.top > headerH + 10;
@@ -120,26 +100,21 @@ function setupSectionSnap() {
                     isSnapping = true;
                     window.scrollTo({ top: targetY, behavior: 'smooth' });
                     setTimeout(() => { isSnapping = false; }, 1000);
-                    break; // snap hanya 1 section per event
+                    break;
                 }
             }
         }, 150);
     }, { passive: true });
 }
 
-// ============================================================
-// HERO ANIMATIONS (page load — tanpa ScrollTrigger)
-// ============================================================
 document.addEventListener('DOMContentLoaded', function () {
 
     const initialLink = document.querySelector('.nav-links a.active') || navLinks[0];
     setActiveNavLink(initialLink);
     updateActiveNavByScroll();
 
-    // Panggil snap setelah layout siap
     setTimeout(setupSectionSnap, 500);
 
-    // Hero entrance timeline
     gsap.timeline({ defaults: { ease: 'power3.out' } })
         .from('.hero-image',    { duration: 1,   opacity: 0, scale: 0.85, ease: 'power2.out' })
         .from('.hero-greeting', { duration: 0.7, x: -50, opacity: 0 }, '-=0.6')
@@ -148,7 +123,6 @@ document.addEventListener('DOMContentLoaded', function () {
         .from('.hero-socials',  { duration: 0.6, y: 25,  opacity: 0 }, '-=0.4')
         .from('.hero-buttons',  { duration: 0.6, y: 25,  opacity: 0 }, '-=0.35');
 
-    // SVG line animations
     function animateWordWithLine(lineClass, dotClass, wordClass, delay = 0) {
         const line = document.querySelector(lineClass);
         const dot  = document.querySelector(dotClass);
@@ -170,36 +144,21 @@ document.addEventListener('DOMContentLoaded', function () {
     animateWordWithLine('.line-yearner', '.dot-yearner', '.word-yearner', 1.8);
     animateWordWithLine('.line-rizzler', '.dot-rizzler', '.word-rizzler', 2.1);
 
-    // ============================================================
-    // ABOUT SECTION
-    // Batas start/end dibuat LEBAR agar elemen tidak hilang
-    // saat masih terlihat di viewport.
-    // start: 'top 90%'  → trigger saat 90% dari atas layar
-    // end:   'bottom 0%' → trigger saat bagian bawah section
-    //                       menyentuh atas layar (benar-benar pergi)
-    // ============================================================
     const aboutSection = document.querySelector('.about');
     if (aboutSection) {
-
         const aboutTitle     = aboutSection.querySelector('.section-title');
         const aboutImg       = aboutSection.querySelector('.about-image-wrap');
-        const aboutPara      = aboutSection.querySelector('.about-content p');
-        const aboutMotto     = aboutSection.querySelector('.about-motto');
-        const aboutBtns      = aboutSection.querySelector('.about-buttons');
+        const aboutContent   = aboutSection.querySelector('.about-content');
         const aboutStatCards = aboutSection.querySelectorAll('.about-stat-card');
 
-        const allTextEls = [aboutTitle, aboutPara, aboutMotto, aboutBtns].filter(Boolean);
-
-        // Initial state — sembunyikan sebelum masuk
-        gsap.set(allTextEls, { autoAlpha: 0, y: 40 });
+        gsap.set([aboutTitle, aboutContent], { autoAlpha: 0, y: 40 });
         gsap.set(aboutImg,   { autoAlpha: 0, x: -60, scale: 0.9 });
         gsap.set(aboutStatCards, { autoAlpha: 0, y: 35 });
 
-        // Fungsi enter — arah bisa dari bawah (fromBelow=true) atau atas
         const enterAbout = (fromBelow) => {
             const yDir = fromBelow ? 40 : -40;
 
-            gsap.killTweensOf([...allTextEls, aboutImg, ...aboutStatCards]);
+            gsap.killTweensOf([aboutTitle, aboutContent, aboutImg, ...aboutStatCards]);
 
             const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
             tl
@@ -209,27 +168,20 @@ document.addEventListener('DOMContentLoaded', function () {
                 .fromTo(aboutImg,
                     { autoAlpha: 0, x: -60, scale: 0.9 },
                     { autoAlpha: 1, x: 0, scale: 1, duration: 0.75 }, '-=0.45')
-                .fromTo(aboutPara,
+                .fromTo(aboutContent,
                     { autoAlpha: 0, y: yDir * 0.75 },
                     { autoAlpha: 1, y: 0, duration: 0.6 }, '-=0.5')
-                .fromTo(aboutMotto,
-                    { autoAlpha: 0, x: -30 },
-                    { autoAlpha: 1, x: 0, duration: 0.55 }, '-=0.4')
-                .fromTo(aboutBtns,
-                    { autoAlpha: 0, y: yDir * 0.5 },
-                    { autoAlpha: 1, y: 0, duration: 0.5 }, '-=0.35')
                 .fromTo(aboutStatCards,
                     { autoAlpha: 0, y: yDir * 0.75 },
                     { autoAlpha: 1, y: 0, duration: 0.55, stagger: 0.1 }, '-=0.3');
         };
 
-        // Fungsi leave — elemen pergi ke arah berlawanan dengan arah scroll
         const leaveAbout = (goingDown) => {
-            const yDir = goingDown ? -35 : 35; // going down → keluar ke atas
+            const yDir = goingDown ? -35 : 35;
 
-            gsap.killTweensOf([...allTextEls, aboutImg, ...aboutStatCards]);
+            gsap.killTweensOf([aboutTitle, aboutContent, aboutImg, ...aboutStatCards]);
 
-            gsap.to(allTextEls, {
+            gsap.to([aboutTitle, aboutContent], {
                 autoAlpha: 0, y: yDir,
                 duration: 0.5, stagger: 0.04, ease: 'power2.in'
             });
@@ -245,10 +197,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         ScrollTrigger.create({
             trigger: aboutSection,
-            // Mulai trigger lebih awal (90%) agar animasi enter sempat berjalan
             start: 'top 90%',
-            // Akhiri trigger saat section benar-benar habis (0% = top of section at top of screen)
-            // Gunakan 'bottom 5%' agar masih ada sedikit buffer sebelum exit dipicu
             end: 'bottom 5%',
             onEnter:      () => enterAbout(true),
             onEnterBack:  () => enterAbout(false),
@@ -257,13 +206,8 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // ============================================================
-    // CONTACT SECTION
-    // Sama — batas diperlebar agar tidak ada glitch
-    // ============================================================
     const contactSection = document.querySelector('.contact');
     if (contactSection) {
-
         const contactHeading = contactSection.querySelector('.contact-heading');
         const contactDivider = contactSection.querySelector('.contact-divider');
         const contactIcons   = contactSection.querySelectorAll('.contact-icon-item');
@@ -271,7 +215,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const allContactEls = [contactHeading, contactDivider, contactFooter].filter(Boolean);
 
-        // Initial hidden state
         gsap.set(allContactEls, { autoAlpha: 0, y: 40 });
         gsap.set(contactIcons,  { autoAlpha: 0, y: 40, scale: 0.85 });
 
@@ -319,8 +262,6 @@ document.addEventListener('DOMContentLoaded', function () {
         ScrollTrigger.create({
             trigger: contactSection,
             start: 'top 75%',
-            // Contact adalah section terakhir, tidak ada yang di bawahnya
-            // 'bottom 2%' memberi buffer yang cukup agar tidak ada glitch
             end: 'bottom 2%',
             onEnter:      () => enterContact(true),
             onEnterBack:  () => enterContact(false),
@@ -328,11 +269,62 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-}); // end DOMContentLoaded
+    const blogSection = document.querySelector('.blog');
+    if (blogSection) {
+        const blogTitle    = blogSection.querySelector('.section-title');
+        const blogSubtitle = blogSection.querySelector('.blog-subtitle');
+        const blogCards    = blogSection.querySelectorAll('.blog-card');
 
-// ============================================================
-// PORTFOLIO INTERACTIVE UI
-// ============================================================
+        gsap.set([blogTitle, blogSubtitle], { autoAlpha: 0, y: 40 });
+        gsap.set(blogCards, { autoAlpha: 0, y: 50 });
+
+        ScrollTrigger.create({
+            trigger: blogSection,
+            start: 'top 85%',
+            end: 'bottom 5%',
+            onEnter: () => {
+                gsap.killTweensOf([blogTitle, blogSubtitle, ...blogCards]);
+                const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+                tl
+                    .fromTo(blogTitle,
+                        { autoAlpha: 0, y: 40 },
+                        { autoAlpha: 1, y: 0, duration: 0.65 })
+                    .fromTo(blogSubtitle,
+                        { autoAlpha: 0, y: 25 },
+                        { autoAlpha: 1, y: 0, duration: 0.5 }, '-=0.4')
+                    .fromTo(blogCards,
+                        { autoAlpha: 0, y: 50 },
+                        { autoAlpha: 1, y: 0, duration: 0.6, stagger: 0.12 }, '-=0.3');
+            },
+            onEnterBack: () => {
+                gsap.killTweensOf([blogTitle, blogSubtitle, ...blogCards]);
+                const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+                tl
+                    .fromTo(blogTitle,
+                        { autoAlpha: 0, y: -30 },
+                        { autoAlpha: 1, y: 0, duration: 0.55 })
+                    .fromTo(blogSubtitle,
+                        { autoAlpha: 0, y: -20 },
+                        { autoAlpha: 1, y: 0, duration: 0.45 }, '-=0.35')
+                    .fromTo(blogCards,
+                        { autoAlpha: 0, y: -35 },
+                        { autoAlpha: 1, y: 0, duration: 0.5, stagger: 0.1 }, '-=0.3');
+            },
+            onLeave: () => {
+                gsap.killTweensOf([blogTitle, blogSubtitle, ...blogCards]);
+                gsap.to([blogTitle, blogSubtitle], { autoAlpha: 0, y: -30, duration: 0.45, ease: 'power2.in' });
+                gsap.to(blogCards, { autoAlpha: 0, y: -35, duration: 0.4, stagger: 0.06, ease: 'power2.in' });
+            },
+            onLeaveBack: () => {
+                gsap.killTweensOf([blogTitle, blogSubtitle, ...blogCards]);
+                gsap.to([blogTitle, blogSubtitle], { autoAlpha: 0, y: 30, duration: 0.45, ease: 'power2.in' });
+                gsap.to(blogCards, { autoAlpha: 0, y: 40, duration: 0.4, stagger: 0.06, ease: 'power2.in' });
+            },
+        });
+    }
+
+});
+
 document.addEventListener('DOMContentLoaded', () => {
     const tabs             = document.querySelectorAll('.portfolio-tab');
     const groups           = document.querySelectorAll('.portfolio-slider-group');
@@ -344,7 +336,6 @@ document.addEventListener('DOMContentLoaded', () => {
     let entranceTrigger = null;
     let isAnimating     = false;
 
-    // ── helpers ──────────────────────────────────────────────
     function ensureWrappersAndOverlays(cards) {
         cards.forEach((card) => {
             let wrapper = card.parentElement;
@@ -354,20 +345,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 card.parentNode.insertBefore(wrapper, card);
                 wrapper.appendChild(card);
             }
-            if (!card.querySelector('.card-overlay')) {
-                const overlay = document.createElement('div');
-                overlay.className = 'card-overlay';
-                overlay.innerHTML = `
-                    <div class="card-progress"><div class="card-progress-bar"></div></div>
-                    <button class="card-nav card-nav-prev">&#8592;</button>
-                    <button class="card-nav card-nav-next">&#8594;</button>
-                    <div class="card-bottom-actions">
-                        <button class="card-heart">&#9829;</button>
-                        <button class="card-info-btn">i</button>
-                    </div>`;
-                card.appendChild(overlay);
-            }
-            card._overlayVisible = false;
         });
     }
 
@@ -397,47 +374,42 @@ document.addEventListener('DOMContentLoaded', () => {
         gsap.set(elements, { clearProps: 'x,y,opacity,transform,transition' });
     }
 
-    // ── Portfolio sidebar animate in/out ──────────────────
     const sidebarEls = portfolioSection.querySelectorAll('.portfolio-heading, .portfolio-tab');
     gsap.set(sidebarEls, { autoAlpha: 0, x: -50 });
 
     ScrollTrigger.create({
-    trigger: portfolioSection,
-    start: 'top 85%',
-    // End diperpanjang melewati pin zone agar sidebar tidak hilang
-    // saat kartu masih sedang di-scroll
-    end: () => {
-        // Ambil end dari pinTrigger jika sudah dibuat, fallback ke bottom section
-        if (pinTrigger) {
-            return `+=${portfolioSection.offsetHeight + (pinTrigger.end - pinTrigger.start) + 200}`;
-        }
-        return 'bottom -50%';
-    },
-    onEnter: () => {
-        gsap.killTweensOf(sidebarEls);
-        gsap.fromTo(sidebarEls,
-            { autoAlpha: 0, x: -50 },
-            { autoAlpha: 1, x: 0, duration: 0.7, stagger: 0.1, ease: 'power3.out' }
-        );
-    },
-    onEnterBack: () => {
-        gsap.killTweensOf(sidebarEls);
-        gsap.fromTo(sidebarEls,
-            { autoAlpha: 0, x: -30 },
-            { autoAlpha: 1, x: 0, duration: 0.6, stagger: 0.08, ease: 'power3.out' }
-        );
-    },
-    onLeave: () => {
-        gsap.killTweensOf(sidebarEls);
-        gsap.to(sidebarEls, { autoAlpha: 0, x: -40, duration: 0.4, stagger: 0.05, ease: 'power2.in' });
-    },
-    onLeaveBack: () => {
-        gsap.killTweensOf(sidebarEls);
-        gsap.to(sidebarEls, { autoAlpha: 0, x: -50, duration: 0.45, stagger: 0.06, ease: 'power2.in' });
-    },
-});
+        trigger: portfolioSection,
+        start: 'top 85%',
+        end: () => {
+            if (pinTrigger) {
+                return `+=${portfolioSection.offsetHeight + (pinTrigger.end - pinTrigger.start) + 200}`;
+            }
+            return 'bottom -50%';
+        },
+        onEnter: () => {
+            gsap.killTweensOf(sidebarEls);
+            gsap.fromTo(sidebarEls,
+                { autoAlpha: 0, x: -50 },
+                { autoAlpha: 1, x: 0, duration: 0.7, stagger: 0.1, ease: 'power3.out' }
+            );
+        },
+        onEnterBack: () => {
+            gsap.killTweensOf(sidebarEls);
+            gsap.fromTo(sidebarEls,
+                { autoAlpha: 0, x: -30 },
+                { autoAlpha: 1, x: 0, duration: 0.6, stagger: 0.08, ease: 'power3.out' }
+            );
+        },
+        onLeave: () => {
+            gsap.killTweensOf(sidebarEls);
+            gsap.to(sidebarEls, { autoAlpha: 0, x: -40, duration: 0.4, stagger: 0.05, ease: 'power2.in' });
+        },
+        onLeaveBack: () => {
+            gsap.killTweensOf(sidebarEls);
+            gsap.to(sidebarEls, { autoAlpha: 0, x: -50, duration: 0.45, stagger: 0.06, ease: 'power2.in' });
+        },
+    });
 
-    // ── Main setup ────────────────────────────────────────
     function setupPortfolioAnimations() {
         killAll();
         gsap.set(portfolioSection, { clearProps: 'transform,opacity' });
@@ -471,14 +443,11 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // Scroll-driven card stacking
         scrollTl = gsap.timeline();
         wrappers.forEach((wrapper) => {
             const dist = wrapper.offsetLeft;
             if (dist > 0) scrollTl.fromTo(wrapper, { x: 0 }, { x: -dist, ease: 'none', duration: dist / maxTravel }, 0);
         });
-
-        const threshold = window.innerWidth * 0.68;
 
         pinTrigger = ScrollTrigger.create({
             animation: scrollTl,
@@ -488,31 +457,8 @@ document.addEventListener('DOMContentLoaded', () => {
             pin: true,
             scrub: 1,
             invalidateOnRefresh: true,
-            onUpdate: () => {
-                cards.forEach(card => {
-                    const rect = card.getBoundingClientRect();
-                    const centerThreshold = window.innerWidth * 0.52;
-                    if (rect.left <= threshold && rect.left > centerThreshold) {
-                        if (!card._overlayVisible) {
-                            card._overlayVisible = true;
-                            gsap.to(card.querySelectorAll('.card-progress, .card-nav'), { opacity: 1, duration: 0.3, overwrite: 'auto' });
-                            gsap.fromTo(card.querySelectorAll('.card-heart, .card-info-btn'), { y: 15, opacity: 0 }, { y: 0, opacity: 1, duration: 0.3, stagger: 0.05, overwrite: 'auto' });
-                            const ib = card.querySelector('.portfolio-card-info');
-                            if (ib) gsap.to(ib, { top: '50px', transform: 'translate(-50%, 0)', duration: 0.4, ease: 'power2.out', overwrite: 'auto' });
-                        }
-                    } else {
-                        if (card._overlayVisible) {
-                            card._overlayVisible = false;
-                            gsap.to(card.querySelectorAll('.card-progress, .card-nav, .card-heart, .card-info-btn'), { opacity: 0, duration: 0.2, overwrite: 'auto' });
-                            const ib = card.querySelector('.portfolio-card-info');
-                            if (ib) gsap.to(ib, { top: '50%', transform: 'translate(-50%, -50%)', duration: 0.4, ease: 'power2.out', overwrite: 'auto' });
-                        }
-                    }
-                });
-            }
         });
 
-        // Card entrance / exit animations
         entranceTrigger = ScrollTrigger.create({
             trigger: portfolioSection,
             start: 'top 80%',
@@ -547,7 +493,6 @@ document.addEventListener('DOMContentLoaded', () => {
     gsap.set(portfolioSection.querySelectorAll('.portfolio-card'), { x: '100vw', opacity: 0 });
     setTimeout(() => setupPortfolioAnimations(), 100);
 
-    // ── Tab switching ─────────────────────────────────────
     tabs.forEach(tab => {
         tab.addEventListener('click', function () {
             if (this.classList.contains('active') || isAnimating) return;
@@ -555,15 +500,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const targetId     = this.dataset.target;
             const activeGroup  = portfolioSection.querySelector('.portfolio-slider-group.active');
             const currentCards = activeGroup ? activeGroup.querySelectorAll('.portfolio-card') : [];
-
-            currentCards.forEach(c => {
-                if (c._overlayVisible) {
-                    gsap.to(c.querySelectorAll('.card-progress, .card-nav, .card-heart, .card-info-btn'), { opacity: 0, duration: 0.1 });
-                    const ib = c.querySelector('.portfolio-card-info');
-                    if (ib) gsap.set(ib, { top: '50%', transform: 'translate(-50%, -50%)' });
-                    c._overlayVisible = false;
-                }
-            });
 
             const clickedTab = this;
 
@@ -622,36 +558,30 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-// ============================================================
-// MODAL
-// ============================================================
-function openProjectModal(title, description, imageSrc, link) {
-    document.getElementById('modalTitle').textContent       = title;
-    document.getElementById('modalDescription').textContent = description;
-    document.getElementById('modalImage').src               = imageSrc;
-    document.getElementById('modalLink').href               = link;
-    const modal = document.getElementById('projectModal');
-    if (modal) modal.classList.add('show');
+function openLightbox(card) {
+    const img = card.querySelector('.portfolio-card-bg');
+    if (!img) return;
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImg = document.getElementById('lightboxImg');
+    lightboxImg.src = img.src;
+    lightboxImg.alt = img.alt;
+    lightbox.classList.add('show');
     document.body.style.overflow = 'hidden';
 }
 
-function closeProjectModal() {
-    const modal = document.getElementById('projectModal');
-    if (modal) modal.classList.remove('show');
+function closeLightbox() {
+    const lightbox = document.getElementById('lightbox');
+    lightbox.classList.remove('show');
     document.body.style.overflow = '';
 }
 
-window.addEventListener('click', (e) => {
-    const modal = document.getElementById('projectModal');
-    if (e.target === modal) closeProjectModal();
+window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeLightbox();
 });
 
-// ============================================================
-// ABOUT STATS
-// ============================================================
 function updateAboutStats() {
-    const totalProjects = document.querySelectorAll('#group-project .portfolio-card').length;
-    const totalCerts    = document.querySelectorAll('#group-certificate .portfolio-card').length;
+    const totalProjects = document.querySelectorAll('#group-highschool .portfolio-card, #group-bince .portfolio-card, #group-putraputri .portfolio-card').length;
+    const totalCerts    = 0;
 
     const statProjectsEl = document.getElementById('stat-projects');
     if (statProjectsEl) statProjectsEl.textContent = totalProjects > 0 ? `${totalProjects}+` : '0';
@@ -670,5 +600,3 @@ function updateAboutStats() {
 }
 
 document.addEventListener('DOMContentLoaded', updateAboutStats);
-
-console.log('Website portfolio berhasil dimuat!');
